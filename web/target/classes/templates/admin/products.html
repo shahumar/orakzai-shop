@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+
+	<div class="tabbable" layout:fragment="body">
+		<div th:replace="fragments/admin_tabs :: adminTab"/>
+		<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
+				<div class="sm-ui-component">
+					<script th:inline="javascript">
+						var theCategoryList = []			
+						/*[# th:each="n : ${categories}"]*/
+						
+							theCategoryList.push({categoryId: "[(${n.id})]", parentId: "[(${n.parent != null} ? ${n.parent.id} : -1)]", Name: "[(${n.descriptions[0].name})]", isFolder: true});
+						/*[/]*/
+						
+					</script>
+					<script>
+					isc.RestDataSource
+					.create({
+						ID : "products",
+						dataFormat : "json",
+						operationBindings : [ {
+							operationType : "fetch",
+							dataProtocol : "postParams",
+							dataURL : "/admin/products/paging.html"
+						}, {
+							operationType : "remove",
+							dataProtocol : "postParams",
+							dataURL : "admin/products/remove.html"
+						} ],
+						transformResponse : function(dsResponse,
+								dsRequest, jsonData) {
+							var status = isc.XMLTools
+									.selectObjects(jsonData,
+											"/response/status");
+
+							if (status != 0 && status != 9999) {
+
+								var msg = isc.XMLTools
+										.selectObjects(jsonData,
+												"/response/statusMessage");
+
+								alert("! " + msg);
+
+							}
+
+							if (status == 9999) {
+
+								window.location = '/admin/products/products.html';
+							}
+						}
+					});
+			var categoryData = [{
+				categoryId : "-1",
+				parentId : "0",
+				Name : "Root",
+				isFolder : true
+			}]
+			
+			for (let i=0; i<theCategoryList.length; i++) {
+				let category = theCategoryList[i];
+					categoryData.push({
+					categoryId :  category.id,
+					parentId : category.parent != null ? category.parent : "-1",
+					Name : category.Name,
+					isFolder : true
+				})
+			}
+
+			isc.TreeGrid
+					.create({
+						ID : "categoryTree",
+						border : 0,
+						showResizeBar : false,
+						data : isc.Tree
+								.create({
+									modelType : "parent",
+									nameProperty : "Name",
+									idField : "categoryId",
+									parentIdField : "parentId",
+									data : categoryData
+								}),
+
+						nodeClick : "itemList.fetchData({categoryId:node.categoryId})",
+						showHeader : false,
+						leaveScrollbarGap : false,
+						animateFolders : true,
+						canAcceptDroppedRecords : true,
+						canReparentNodes : false,
+						selectionType : "single",
+						animateRowsMaxTime : 750
+					});
+
+			isc.ListGrid
+					.create({
+						ID : "itemList",
+						border : 0,
+						dataSource : "products",
+						showRecordComponents : true,
+						showRecordComponentsByCell : true,
+						canRemoveRecords : true,
+						autoFetchData : false,
+						showFilterEditor : true,
+						filterOnKeypress : true,
+						dataFetchMode : "paged",
+
+						fields : [
+
+						{
+							title : "Id",
+							name : "productId",
+							canFilter : false
+						}, {
+							title : "Name",
+							name : "name"
+						}, {
+							title : "Sku",
+							name : "sku"
+						}, {
+							title : "Available",
+							name : "available",
+							type : "boolean"
+						}, {
+							title : "Details",
+							name : "buttonField",
+							align : "center",
+							canFilter : false,
+							canSort : false,
+							canReorder : false
+						} ],
+						selectionType : "single",
+						removeData : function() {
+							if (confirm('Do you really want to remove this record ?')) {
+								return this.Super("removeData",
+										arguments);
+							}
+						},
+						createRecordComponent : function(record,
+								colNum) {
+
+							var fieldName = this
+									.getFieldName(colNum);
+							if (fieldName == "buttonField") {
+								var button = isc.IButton
+										.create({
+											height : 18,
+											width : 65,
+											title : "Details",
+											click : function() {
+												window.location = '/admin/products/editProduct.html?id='
+														+ record["productId"];
+											}
+										});
+								return button;
+
+							}
+
+						}
+
+					});
+
+			// Define application layout
+			// ---------------------------------------------------------------------
+
+			isc.HLayout.create({
+				ID : "pageLayout",
+				width : "700",
+				height : "600",
+				position : "relative",
+				members : [ isc.SectionStack.create({
+					ID : "leftSideLayout",
+					width : 200,
+					showResizeBar : true,
+					visibilityMode : "multiple",
+					animateSections : true,
+					sections : [ {
+						title : "Categories",
+						autoShow : true,
+						items : [ categoryTree ]
+					} ]
+				}), isc.SectionStack.create({
+					ID : "rightSideLayout",
+					visibilityMode : "multiple",
+					animateSections : true,
+					sections : [ {
+						title : "Products",
+						autoShow : true,
+						items : [ itemList ]
+					} ]
+				}) ]
+			});
+
+			isc.Page.setEvent("load", "pageLayout.draw()");
+					</script>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head th:fragment="head_script">
+	
+	<!-- <jsp:include page="/resources/js/functions.jsp" /> -->
+	<script type="text/javascript" th:src="@{/js/shop-functions.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap/jquery.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+	
+	<script type="text/javascript" th:inline="javascript">
+		function getContextPath() {
+			return "[(${#request.contextPath})]";
+		}
+	
+		function getMerchantStore() {
+			return "[(${#request.getAttribute('MERCHANT_STORE').id})]";
+		}
+	
+		function getMerchantStoreCode() {
+			return "[(${#vars['MERCHANT_STORE.code']})]";
+		}
+	
+		function getLanguageCode() {
+			return "[(${#vars['LANGUAGE.code']})]";
+		}
+	
+		function getItemLabel(quantity) {
+			var labelItem = 'labelitem';
+			if (quantity > 1) {
+				labelItem = 'labelitems';
+			}
+			return labelItem;
+		}
+	
+		function getLoginErrorLabel() {
+			return 'Login Failed. Username or Password is incorrect.';
+		}
+	
+		function emptyCartLabel() {
+			$("#cartMessage").html('Your Shopping cart is empty');
+			var labelItem = 'item';
+			$("#cartinfo").html(
+					'<span id="cartqty">(' + 0 + ' ' + labelItem
+							+ ')</span>&nbsp;<span id="cartprice"></span>');
+			$('#shoppingcart').hide();
+			$('#cartMessage').show();
+		}
+	
+		function getInvalidEmailMessage() {
+			return 'Invalid email address';
+		}
+	
+		function getInvalidUserNameMessage() {
+			return 'User name must be at least 6 characters long';
+		}
+	
+		function getInvalidPasswordMessage() {
+			return 'Password must be at least 6 characters long';
+		}
+	
+		function getInvalidCheckPasswordMessage() {
+			return 'Both password must match';
+		}
+	
+		function cartInfoLabel(cart) {
+			var labelItem = getItemLabel(cart.quantity);
+			$("#cartinfo").html(
+					'<span id="cartqty">(' + cart.quantity + ' ' + labelItem
+							+ ')</span>&nbsp;<span id="cartprice">' + cart.total
+							+ '</span>');
+		}
+	
+		function cartSubTotal(cart) {
+			return '<div class="pull-right"><font class="total-box-label"><s:message code="label.subtotal" text="Sub-total" /> : <font class="total-box-price"><strong><span id="checkout-total">'
+					+ cart.subTotal + '</span></strong></font></font></div>';
+		}
+	
+		/**
+		 * Builds the product container div from the product list
+		 **/
+		function buildProductsList(productList, divProductsContainer) {
+	
+			for (var i = 0; i < productList.products.length; i++) {
+				var productHtml = '<li itemscope itemtype="http://schema.org/Enumeration" class="item listing-item" data-id="' + productList.products[i].id  + '" item-price="' +  productList.products[i].price +'" item-name="' +  productList.products[i].description.name +'" item-order="' +  productList.products[i].sortOrder +'">';
+				productHtml = productHtml
+						+ '<div class="product-box"><a href="<c:url value="/shop/product/" />'
+						+ productList.products[i].description.friendlyUrl
+						+ '.html<sm:breadcrumbParam/>">';
+				productHtml = productHtml + '<h4 class="name" itemprop="name">'
+						+ productList.products[i].description.name + '</h4></a>';
+				if (productList.products[i].discounted) {
+					productHtml = productHtml + '<h3><del>'
+							+ productList.products[i].originalPrice
+							+ '</del>&nbsp;<span class="specialPrice">'
+							+ productList.products[i].finalPrice + '</span></h3>';
+				} else {
+					productHtml = productHtml + '<h3>'
+							+ productList.products[i].finalPrice + '</h3>';
+				}
+				var productUrl = '<c:url value="/shop/product/" />'
+						+ productList.products[i].description.friendlyUrl
+						+ '.html<sm:breadcrumbParam/>';
+				//if(ref!=null) {
+				//productUrl = productUrl + '/ref=' + ref;
+				//}
+				if (productList.products[i].image != null) {
+					productHtml = productHtml
+							+ '<a href="' + productUrl + '"><img src="<c:url value="/"/>'
+							+ productList.products[i].image.imageUrl
+							+ '" itemprop="image"></a>';
+				}
+				productHtml = productHtml
+						+ '<div class="bottom"><a href="' + productUrl + '" class="view">View</a> / <a productid="' + productList.products[i].id + '" href="#" class="addToCart">Add to cart</a></div>';
+				productHtml = productHtml + '</div>'
+				productHtml = productHtml + '</li>'
+				$(divProductsContainer).append(productHtml);
+	
+			}
+	
+			initBindings();
+	
+		}
+	</script>
+	
+<!-- specific css -->
+	<link th:href="@{/templates/bootstrap/css/bootstrap.min.css}"
+		rel="stylesheet">
+	<link th:href="@{/templates/bootstrap/css/bootstrap-responsive.min.css}"
+		rel="stylesheet">
+
+	<link th:href="@{/css/bootstrap/css/sm-bootstrap.css}"
+		rel="stylesheet">
+	<link th:href="@{/css/bootstrap/css/sm-bootstrap-responsive.css}"
+		rel="stylesheet">
+	
+	<!-- generic and common css file -->
+	<link th:href="@{/css/sm.css}" rel="stylesheet">
+	<link th:href="@{/css/showLoading.css}" rel="stylesheet">
+	
+	<!-- template css file -->
+	<link th:href="@{/templates/bootstrap/css/theme.css}" rel="stylesheet">
+	<script type="text/html" id="miniShoppingCartTemplate">
+		{{#shoppingCartItems}}
+			<tr id="{{productId}}" class="cart-product">
+				<td>
+			{{#image}}
+					<img width="40" src="{{contextPath}}{{image}}">
+			{{/image}}
+			{{^image}}
+					&nbsp
+			{{/image}}
+				</td>
+				<td>{{quantity}}</td>
+				<td>{{name}}</td>
+				<td>{{price}}</td>
+				<td><button productid="{{productId}}" class="close removeProductIcon" onclick="removeItemFromMinicart('{{id}}')">x</button></td>
+			</tr>
+		{{/shoppingCartItems}}
+	</script>
+
+</head>
+<body>
+
+	<div id="mainmenu" class="row-fluid" th:fragment="header">
+		<ul class="nav nav-pills pull-left" id="linkMenuLinks">
+			<li class="active">
+				<a href="">
+					Home
+				</a>
+			</li>
+			<li class="">
+				<a class="current"> 
+					<span class="name">{content.name}
+				</span>
+				</a>
+			</li>
+			<li><a>Contact us"</a></li>
+		</ul>
+
+		<div id="miniCart" style="padding-top: 8px; padding-bottom: 10px;" class="btn-group pull-right">
+			&nbsp;&nbsp;&nbsp; 
+			<i class="icon-shopping-cart icon-black"></i> 
+			<a style="box-shadow: none; color: FF8C00;" href="#" data-toggle="dropdown" class="open noboxshadow dropdown-toggle"id="open-cart">My cart</a>
+			<ul class="dropdown-menu minicart" id="minicartComponent">
+				<li>
+					<div class="cartbox" id="cart-box">
+						<div class="box-content clearfix">
+							<p id="shoppingcarttitle" class="lbw">Shopping cart</p>
+							<br />
+							<div id="cartShowLoading" class="loading-indicator" style="width:100%;display:none;"></div>
+							<div id="cartMessage" style="width:100%;display:none;"></div>
+							<div id="shoppingcart">
+								<table style="margin-bottom: 5px" class="table">
+									<tbody id="shoppingcartProducts"><!-- products place holder -->
+									</tbody>
+								</table>
+								<div id="total-box" class="total-box"></div><!-- totals place holder -->
+								<br />
+								<button class="btn btn-large" style="width: 100%" type="button" onclick="viewShoppingCartPage();">Checkout</button>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		<ul class="logon-box pull-right">
+			<li id="fat-menu" class="dropdown">
+				<a class="dropdown-toggle noboxshadow" data-toggle="dropdown" href="#">
+					Welcome TestUser<b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a href="">My account</a></li>
+					<li class="divider"></li>
+					<li><a href="">Logout</a></li>
+				</ul>
+			</li>
+		</ul>
+
+		<!-- no dual login -->
+		<ul class="logon-box pull-right">
+			<li>You are logged in as TestUser We can't display store logon box</li>
+		</ul>
+
+		<!-- login box -->
+		<ul class="pull-right" style="list-style-type: none; padding-top: 8px; z-index: 500000;">
+			<li id="fat-menu" class="dropdown">
+				<a href="#" id="signinDrop" role="button" class="dropdown-toggle noboxshadow" data-toggle="dropdown"> 
+					Signin
+					<b class="caret"></b>
+				</a>
+
+				<div id="signinPane" class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+					<div id="loginError" class="alert alert-error" style="display: none;"></div>
+					<!-- form id must be login, form fields must be userName, password and storeCode -->
+					<form id="login" method="post" accept-charset="UTF-8">
+						<div class="control-group">
+							<label>Username</label>
+							<div class="controls">
+								<input id="userName" style="margin-bottom: 15px;" type="text" name="userName" size="30" />
+							</div>
+						</div>
+						<div class="control-group">
+							<label>Password</label>
+							<div class="controls">
+								<input id="password" style="margin-bottom: 15px;" type="password" name="password" size="30" />
+							</div>
+						</div>
+						<input id="storeCode" name="storeCode" type="hidden" value="" />
+						<button type="submit" style="width: 100%" class="btn btn-large" id="login-button">Login</button>
+					</form>
+					<a href="" role="button" class="" data-toggle="modal"> Not yet
+						registered ?</a>
+				</div></li>
+		</ul>
+
+	</div>
+
+	<div th:fragment="navbar">
+		<script type="text/javascript" th:src="@{/js/hogan.js}"></script>
+		<script type="text/javascript"th:src="@{/js/typeahead.min.js}"></script>
+
+		<script type="text/javascript">
+			$(document).ready(function() { 
+				$('#searchField').typeahead({
+					name: 'shopizer-search',		
+					prefetch: true,
+				    remote: {
+			    		url: '',
+			        	filter: function (parsedResponse) {
+			            	// parsedResponse is the array returned from your backend
+			            	console.log(parsedResponse);
+			
+			            	// do whatever processing you need here
+			            	return parsedResponse;
+			        	}
+			    	},
+					template: [].join(''),
+					engine: Hogan
+					});
+			
+			});
+
+		</script>
+
+            <!-- Start Navbar-->
+        <div class="row-fluid">
+			<div class="span4 pull-left">
+				<nav class="logo">		 
+	                <img class="logoImage" src=""/>
+           			<a href="">
+           				Store Name
+           			</a>  
+				</nav>
+			</div>
+			<div class="span8 pull-right">
+				<nav id="menu" class="pull-right">
+                    <ul id="mainMenu">
+						<li class="">  
+	                    	<a href="" class="current">          
+	                    		<span class="name">Home</span>     
+	                    		<span class="desc">Home</span>                                  
+	                    	</a>                         
+	                    </li>		            
+						<li class="">
+							<a href="" class="current"> 
+								<span class="name">{category.description.name}</span>
+								<span class="desc">{category.description.categoryHighlight}</span> 
+							</a>
+						</li> 
+                    </ul>
+                    		            
+                 	<div id="searchGroup" class="btn-group pull-right">
+						<form id="searchForm" class="form-inline" method="post" action="">
+							<input id="searchField" class="tt-query" name="q" type="text" placeholder="Search query" autocomplete="off" spellcheck="false" dir="auto" value="">
+							<button id="searchButton" class="btn" type="submit">Search</button>
+						</form>
+					</div>
+				</nav>
+			</div>
+        </div>
+			<!-- End Navbar-->
+	</div>
+
+	<footer th:fragment="footer">
+    	<div id="footer" class="row-fluid">     	                 
+    		<div class="span3">
+				<div class="company">
+					<p> 
+						/pages/shop/common/preBuiltBlocks/storeAddress.jsp
+					</p>
+				</div>
+            </div>
+
+			<div class="span3 contentPages">
+				<p class="lead">Informations</p>
+				<!-- Pages -->
+				<ul class="footerLiks">
+
+					<li><a href="" class="current" style="color: #fff;">${content.name}</a></li>
+
+					<li><a href="shop/store/contactus.html" style="color: #fff;">Contact
+							us</a></li>
+				</ul>
+			</div>
+
+            <div class="span3 customerSection">
+                    	
+            	<p class="lead">My Account</p>
+                <ul class="footerLiks">
+                	
+              		<li><a href="/shop/customer/account.html" style="color: #fff;">Profile</a></li>
+              		<li><a href="/shop/customer/billing.html" style="color: #fff;">Billing & shipping information</a></li>
+              		<li>Recent orders</li>
+                	
+                	<li>
+						You are logged in as Testuser. We can't display store logon box
+					</li>
+                	
+					<li><a href="#" style="color: #fff;">Login</a></li>
+				</ul>
+			</div>
+            <div class="span3 socialLinksSection">
+                    	<!-- Social links -->
+            	<p class="lead">Connect with us</p>
+	            <a href="facebook_page_url"><img src="resources/img/facebook-transparent.png" width="40"></a>
+	            <a href="twitter hadler">
+	            	<img src="/resources/img/twitter-transparent.png" width="50">
+	            </a>
+	        </div>				
+		</div>
+		<div id="footer-bottom">
+			<div class="container">
+				<div class="row-fluid">
+					<div class="span12 text">&copy;&nbsp; <a href="http://www.shopizer.com" class="footer-href" target="_blank">Shopizer</a></div>
+				</div>
+			</div>
+		</div>
+    </footer>
+	<div th:fragment="footer_script">
+		<!-- <jsp:include page="/resources/js/functions.jsp" /> -->
+		<script type="text/javascript" th:src="@{/js/json2.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery-cookie.js}"></script>
+		<script type="text/javascript" th:src="@{/js/shopping-cart.js}"></script>
+		<script type="text/javascript" th:src="@{/js/login.js}"></script>
+		<script type="text/javascript" th:src="@{/js/jquery.showLoading.min.js}"></script>
+		<script type="text/javascript"  th:src="@{/js/json2.js}"></script>
+
+				
+	</div>
+
+
+</body>
+</html>

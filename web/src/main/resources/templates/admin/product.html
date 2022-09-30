@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+	<th:block layout:fragment="extra_script">
+		<script type="text/javascript">
+			var priceFormatMessage = 'Wrong format';
+		</script>
+	
+	    <link th:href="@{/css/bootstrap/css/datepicker.css}" rel="stylesheet"></link>
+		<script th:src="@{/js/bootstrap/bootstrap-datepicker.js}"></script>
+		<script th:src="@{/js/ckeditor/ckeditor.js}"></script>
+		<script th:src="@{/js/jquery.formatCurrency-1.4.0.js}"></script>
+		<script th:src="@{/js/jquery.alphanumeric.pack.js}"></script>
+		<script th:src="@{/js/adminFunctions.js}"></script>
+		
+		<script type="text/javascript" th:inline="javascript">
+	
+	
+			$(function(){
+				$('#sku').alphanumeric();
+				$('#productPriceAmount').numeric({allow:"."});
+				$('#quantity').numeric();
+				$('#ordermin').numeric();
+				$('#ordermax').numeric();
+				$('#order').numeric();
+				$('#weight').numeric({allow:"."});
+				$('#width').numeric({allow:"."});
+				$('#length').numeric({allow:"."});
+				$('#hight').numeric({allow:"."});
+				/*[# th:each="description, counter : ${product.descriptions}"]*/
+					$("#name[(${counter})]").friendurl({id : 'seUrl[(${counter})]'});
+				/*[/]*/
+				
+			});
+	
+	
+			
+			function removeImage(imageId) {
+				$("#store.error").show();
+				$.ajax({
+							type : 'POST',
+							url : '/admin/products/product/removeImage.html',
+							data : 'imageId=' + imageId,
+							dataType : 'json',
+							success : function(response) {
+	
+								var status = isc.XMLTools.selectObjects(
+										response, "/response/status");
+								if (status == 0 || status == 9999) {
+	
+									//remove delete
+									$("#imageControlRemove").html('');
+									//add field
+									$("#imageControl")
+											.html(
+													'<input class=\"input-file\" id=\"image\" name=\"image\" type=\"file\">');
+									$(".alert-success").show();
+	
+								} else {
+	
+									//display message
+									$(".alert-error").show();
+								}
+	
+							},
+							error : function(xhr, textStatus, errorThrown) {
+								alert('error ' + errorThrown);
+							}
+	
+						});
+			}
+		</script>
+	</th:block>
+
+	<div class="tabbable" layout:fragment="body">
+			
+		<div th:replace="fragments/admin_tabs :: adminTab"/>
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
+				<div class="sm-ui-component">
+					<th:block th:if="${product.product.id != null && product.product.id>0}">
+						<div th:replace="fragments/admin_tabs :: productLinks(${product.product.id})"/>
+					</th:block>
+					<h3 th:if="#{product.product.id!=null && product.product.id>0}" th:text="#{label.product.edit}">
+						Edit product
+					</h3>
+					<h3 th:unless="#{product.product.id!=null && product.product.id>0}"  th:text="#{label.product.create}">
+						Create product
+					</h3>
+					
+					<br/>
+					
+					<th:block th:if="${product.product.id != null && product.product.id>0}">
+						<strong th:each="desc : ${product.descriptions}" th:text="@{'/product/' + ${desc.getSeUrl()} + '.html'}"></strong>
+					</th:block>
+					
+				
+					<br/><br/>
+
+                    <form method="POST" enctype="multipart/form-data" th:object="${product}" th:action="@{/admin/products/save.html}">
+                       	<th:block th:if="${#fields.hasAnyErrors()}">
+                       		<div id="store.error" class="alert alert-error" style="display:none;">An error occured</div>
+                       		<div class="alert alert-error" th:each="err : ${#fields.allErrors()}" th:text="${err}"/>
+                       	</th:block>
+                        	
+                       	<div id="store.success" th:text="#{message.success}" class="alert alert-success" th:style="${success!=null ? 'display:block;' : 'display:none;'}">
+                       		Request successfull
+                       	</div>
+
+                           
+                        <div class="control-group">
+	                        <label th:for="${#ids.next('product.sku')}">Sku</label>
+	                        <div class="controls">
+	                        	<input class="input-large highlight" th:classappend="${#fields.hasErrors('product.sku') ? 'error' : ''}" id="sku" th:field="*{product.sku}"/>
+	                            <span class="help-inline">
+	                            	<th:block th:text="#{label.generic.alphanumeric}">
+	                            		Alphanumeric
+	                            	</th:block>
+	                            	<span th:errorclass="error" th:errors="*{product.sku}" th:if="${#fields.hasErrors('product.sku')}"/>
+	                            </span>
+	                        </div>
+                  		</div>
+
+						<input type="hidden" th:field="*{product.id}"/>
+                 	
+
+                  		<div class="control-group">
+                        	<label th:for="${#ids.next('product.available')}">Product available</label>
+                        	<div class="controls">
+                        		<input type="checkbox" th:field="*{product.available}"/>
+                        	</div>
+                  		</div>
+                  		
+                  		
+                  		<div class="control-group">
+	                        <label th:for="${#ids.next('product.availabledate')}">Date available</label>
+	                        <div class="controls">
+                        		 <input id="dateAvailable" th:field="*{dateAvailable}" th:value="*{dateAvailable}" class="small" type="text" data-datepicker="datepicker"> 
+                                 <script type="text/javascript">
+                                 	$('#dateAvailable').datepicker();
+                                 </script>
+                                 <span class="help-inline">
+                                 	<span th:errorClass="error" th:errors="*{dateAvailable}" th:if="${#fields.hasErrors('dateAvailable')}" />
+                                 </span>
+	                        </div>
+	                  	</div>
+	                  	
+	                  	<div class="control-group">
+                        	<label th:for="${#ids.next('product.manufacturer')}" >Manufacturer</label>
+                          	<div class="controls">
+                          		<select th:field="*{product.manufacturer}">
+                          			<option th:each="m : ${product.product.manufacturer}" th:value="${m}" th:text="${product.descriptions[0].name}"></option>
+                          		</select>
+                                <span class="help-inline"></span>
+                          	</div>
+                    	</div>
+
+
+
+
+                  		<div class="control-group">
+                        	<label th:for="${#ids.next('product.productTypes')}" >Product type</label>
+                        	<div class="controls">
+                        		 <select th:field="*{product.type}">
+                        		 	<option th:each="o : ${productTypes}" th:value="${o.id}" th:text="${o.code}"/>
+                        		 </select>
+	                             <span class="help-inline"></span>
+                        	</div>
+                 		 </div>
+
+                 
+				    	<th:block th:each="description, counter : *{descriptions}">
+
+	                        <div class="control-group">
+	
+	                              <label class="required" th:for="${#ids.next('productedit.productname')}">Product name ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              		<input class="input-large highlight" th:id="'name' + ${counter.index}" th:field="*{descriptions[__${counter.index}__].name}"/>
+	                                    <span class="help-inline">
+	                                    <span th:errorClass="error" th:errors="${product.descriptions[__${counter.index}__].name}" th:if="${product.descriptions[__${counter.index}__].name}" />
+	                              </div>
+	
+	                       </div>
+	
+	                      
+	                        <div class="control-group">
+	                              <label th:for="${#ids.next('sefurl')}" class="required">Search engine friendly url ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                   <input th:id="'seUrl'+${counter.index}" class="input-large" th:field="*{descriptions[__${counter.index}__].seUrl}"/>
+	                                   <span class="help-inline">
+	                                   <span th:errorClass="error" th:errors="${description.seUrl}" th:if="${#fields.hasErrors('description.seUrl')}" />
+	                              </div>
+	                       </div>
+	                       
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${#ids.next('producthl')}">Product highlight ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              		<input class="input-large" th:field="*{descriptions[__${counter.index}__].productHighlight}"/>
+	                                    <span class="help-inline" th:errorClass="error" th:errors="${product.descriptions[__${counter.index}__].productHighlight}"/>
+	                              </div>
+	
+	                       </div>
+	
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${#ids.next('productdesc')}">Product description ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              	     <textarea cols="30" th:value="${product.descriptions[__${counter.index}__].description}" th:id="'descriptions'+${counter.index}+'.description'" th:field="*{descriptions[__${counter.index}__].description}">
+	                        			 </textarea>
+	                              </div>                
+	                        <script type="text/javascript" th:inline="javascript">
+	
+								CKEDITOR.replace('descriptions[[${counter.index}]].description',
+								{
+									skin : 'office2003',
+									toolbar : 
+									[
+										['Source','-','Save','NewPage','Preview'], 
+										['Cut','Copy','Paste','PasteText','-','Print'], 
+										['Undo','Redo','-','Find','-','SelectAll','RemoveFormat'], '/', 
+										['Bold','Italic','Underline','Strike','-','Subscript','Superscript'], 
+										['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'], 
+										['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'], 
+										['Link','Unlink','Anchor'], 
+										['Image','Flash','Table','HorizontalRule','SpecialChar','PageBreak'], '/', 
+										['Styles','Format','Font','FontSize'], ['TextColor','BGColor'], 
+										['Maximize', 'ShowBlocks'] 
+									],
+									
+									filebrowserWindowWidth : '720',
+	        						filebrowserWindowHeight : '740',
+									filebrowserImageBrowseUrl :    '<c:url value="/admin/content/fileBrowser.html"/>'
+									
+	
+								});
+	
+
+							</script>
+	                              
+	                              
+	                              
+	                       </div>
+	                      
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${product.descriptions[__${counter.index}__].metatagTitle}">Product title ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                   <input class="input-large" th:field="*{descriptions[__${counter.index}__].metatagTitle}"/>
+	                                   <span class="help-inline" th:errorClass="error" th:errors="${product.descriptions[__${counter.index}__].metatagTitle}"/>
+	                              </div>
+	                       </div>
+	
+	                      
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${product.descriptions[__${counter.index}__].metatagDescription}">Metatag description ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                    <input class="input-large" th:field="*{descriptions[__${counter.index}__].metatagDescription}"/>
+	                                          <span class="help-inline" th:errorClass="error" th:errors="${product.descriptions[__${counter.index}__].metatagDescription}"/>
+	                              </div>
+	                       </div>
+	
+	                      
+	
+	                         <input type="hidden" th:field="*{descriptions[__${counter.index}__].language.id}" />
+	                         <input type="hidden" th:field="*{descriptions[__${counter.index}__].language.code}" />
+							 <input type="hidden" th:field="*{descriptions[__${counter.index}__].id}" />
+							 <input type="hidden" th:field="*{descriptions[__${counter.index}__].metatagKeywords}" />
+							 <input type="hidden" th:field="*{descriptions[__${counter.index}__].productExternalDl}" />
+
+						</th:block>
+
+	                 <div class="control-group">
+	
+	                        <label class="required" >Price</label>
+	
+	                        <div class="controls">
+	                        	<input id="productPriceAmount" class="highlight" th:field="*{productPrice}"/>
+	                            <span id="help-price" class="help-inline" th:errorClass="error" th:errors="*{productPrice}"/>
+	                        </div>
+	                  </div>
+	
+	                 
+	
+	                 <div class="control-group">
+	                        <label>Quantity available</label>
+	                        <div class="controls">
+	                        	<input id="quantity" class="highlight" th:field="${product.availability.productQuantity}"/>
+	                            <span class="help-inline" th:errorClass="error" th:errors="${product.availability.productQuantity}"/>
+	                        </div>
+	                  </div>
+
+                 
+
+	                  <div class="control-group">
+	                        <label>Quantity order minimum</label>
+	                        <div class="controls">
+                                <input id="ordermin" class="highlight" th:field="${product.availability.productQuantityOrderMin}"/>
+                                <span class="help-inline" th:errorClass="error" th:errors="${product.availability.productQuantityOrderMin}"/>
+	
+	                        </div>
+	                  </div>
+		
+		                 
+		
+		                  <div class="control-group">
+		                        <label>Quantity order maximum</label>
+		                        <div class="controls">
+                                    <input id="ordermax" class="highlight" th:field="${product.availability.productQuantityOrderMax}"/>
+                                    <span class="help-inline" th:errorClass="error" th:errors="${product.availability.productQuantityOrderMax}"/>
+		                        </div>
+		                  </div>
+		                  
+		                 <div class="control-group">
+                        	<label>Product will be shipped</label>
+                        	<div class="controls">
+                            	<checkbox th:field="${product.product.productShipeable}" />
+                        	</div>
+		                 </div>
+		
+		
+		                 <input type="hidden" th:field="${product.availability.region}" />
+		                 <input type="hidden" th:field="${product.availability.id}" />
+		                 <input type="hidden" th:field="${product.product.productVirtual}" />
+		                 <input type="hidden" th:field="${product.price.id}" />
+		                 
+		                 <div class="control-group">
+		                        <label>Weight</label>
+		                        <div class="controls">
+                                    <input id="weight" class="" th:field="${product.product.productWeight}"/>
+                                    <span class="help-inline" th:errorClass="error" th:errors="${product.product.productWeight}"/>
+		                        </div>
+		                  </div>
+		
+		                 <div class="control-group">
+		                        <label><s:message code="label.product.height" text="Height"/></label>
+		                        <div class="controls">
+		                                    <form:input id="height" cssClass="" th:field="${product.product.productHeight}"/>
+		                                    <span class="help-inline" th:errorClass="error" th:errors="${product.product.productHeight}"/>
+		                        </div>
+		                  </div>
+		     
+		     
+		                 <div class="control-group">
+		                        <label>Width</label>
+		                        <div class="controls">
+                                    <input id="width" class="" th:field="${product.product.productWidth}"/>
+                                    <span class="help-inline" th:errorClass="error" th:errors="${product.product.productWidth}"/>
+		                        </div>
+		                  </div>
+		                  
+		                  <div class="control-group">
+		                        <label><Length</label>
+		                        <div class="controls">
+                                    <input id="length" class="" th:path="${product.product.productLength}"/>
+                                    <span class="help-inline" th:errorClass="error" th:errors="${product.product.productLength}"/>
+		                        </div>
+		                  </div>          
+		    
+		                  <div class="control-group">
+		                        <label>Sort order</label>
+		                        <div class="controls">
+                                    <input id="order" class="" th:field="${product.product.sortOrder}"/>
+                                    <span class="help-inline" th:errorClass="error" th:errors="${product.product.sortOrder}"/>
+		                        </div>
+		                  </div>                 
+		
+		
+		                  <div class="control-group">
+		                        <label>Image&nbsp;
+		                        <th:block th:if="${product.productImage !=null && product.productImage.productImage!=null && product.productImage.productImage!=''}">
+		                        	<span id="imageControlRemove"> - <a href="#" th:onClick="removeImage('${product.productImage.id}')">Remove</a></span>
+		                        </th:block>
+		                        <div class="controls" id="imageControl">
+		                        	<img th:if="${product.productImage !=null && product.productImage.productImage!=null && product.productImage.productImage!=''}" 
+		                        	th:src="${@imageFilePathUtils.buildProductImageFilePath(product.product.getMerchantStore(), product.product.sku, product.productImage.getProductImage())}" width="200"/>
+	                        		
+		                        	<input class="input-file" id="image" name="image" type="file" th:unless="${product.productImage !=null && product.productImage.productImage!=null && product.productImage.productImage!=''}">
+	                        		
+		                        </div>
+		                  </div>
+		                  
+		                  <input type="hidden" th:field="${product.productImage.productImage}" />
+		                  
+		                  <div class="control-group">
+		                        	<label>Tax class</label>
+		                          	<div class="controls">
+		                          		<select th:field="${product.product.taxClass.id}">
+                        		 			<option th:each="o : ${productTypes}" th:value="${o.id}" th:text="${o.code}"/>
+                        		 		</select>
+	                          		      
+		                                  <span class="help-inline"></span>
+		                          	</div>
+		                   </div>
+		
+		
+		                   <div class="form-actions">
+		                            <div class="pull-right">
+		                                    <button type="submit" class="btn btn-success">Submit</button>
+		                            </div>
+		                   </div>
+           
+
+                        </form>
+                        
+                  <th:block th:if="${product.product.id!=null && product.product.id>0}">      
+	                  <form method="POST" enctype="multipart/form-data" commandName="product" action="@{/admin/products/product/duplicate.html}">
+								<input type="hidden" name="productId" value="${product.product.id}" />
+		                        <div class="form-actions">
+		                            <div class="pull-right">
+		                                    <button type="submit" class="btn">Create similar product</button>
+		                            </div>
+		                   		</div>
+	                   </form>
+                   </th:block>
+                   
+					
+
+
+
+
+
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

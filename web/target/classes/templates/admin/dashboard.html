@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+
+	<div class="tabbable" layout:fragment="body">
+
+		<ul><li>includes admin links</li></ul>
+		<div id="messages" class="alert alert-info" style="display: none">
+		</div>
+
+		<div class="box">
+			<span class="box-title">
+				<p>
+					Store information
+				</p>
+			</span>
+
+			<p>
+			<address>
+				<strong>Store Name</strong><br />
+					shah@kmmrce.com
+					<br />
+					Dubai
+					Dubai
+					0000
+				<br />
+				UAE
+				<br />
+				0974569876987
+			</address>
+
+
+			</p>
+			<p>
+				<i class="icon-user"></i>
+				<br /> <i class="icon-calendar"></i>
+				Last access
+				: 22:08
+			</p>
+
+
+		</div>
+			<br />
+			<h3>
+				Recent orders
+			</h3>
+			<br />
+			<br />
+
+			/admin/orders/paging.html?_endRow=10
+			/admin/orders/remove.html
+			/admin/orders/editOrder.html
+			/admin/orders/list.html
+			/pages/admin/orders/orders-gridHeader.jsp
+			/pages/admin/components/list.jsp
+			<!-- End listing grid include -->
+
+
+	</div>
+
+</body>
+</html>
