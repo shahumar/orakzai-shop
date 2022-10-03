@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -69,22 +70,22 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
     @Transactional
 	public ShoppingCart getShoppingCart(final Customer customer) throws ServiceException {
 
-//		try {
-//
-//			ShoppingCart shoppingCart = shoppingCartDao.getByCustomer(customer);
-//			populateShoppingCart(shoppingCart);
-//			if(shoppingCart!=null && shoppingCart.isObsolete()) {
-//				delete(shoppingCart);
-//				return null;
-//			} else {
-//				return shoppingCart;
-//			}
-//
-//
-//		} catch (Exception e) {
-//			throw new ServiceException(e);
-//		}
-		return null;
+		try {
+			Optional<ShoppingCart> shoppingCart = shoppingCartDao.findByCustomerId(customer.getId());
+			if (shoppingCart.isPresent()) {
+				ShoppingCart cart = shoppingCart.get();
+				populateShoppingCart(cart);
+				if (cart.isObsolete()) {
+					delete(cart);
+					return null;
+				}
+				return cart;
+			}
+			return null;
+			
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
 
 	}
 
@@ -209,12 +210,12 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 	public ShoppingCart getByCustomer(final Customer customer) throws ServiceException {
 
 		try {
-			ShoppingCart shoppingCart = shoppingCartDao.findByCustomerId(customer.getId()).get();
+			Optional<ShoppingCart> shoppingCart = shoppingCartDao.findByCustomerId(customer.getId());
 			
-			if(shoppingCart==null) {
+			if(!shoppingCart.isPresent()) {
 				return null;
 			}
-			return populateShoppingCart(shoppingCart);
+			return populateShoppingCart(shoppingCart.get());
 
 		} catch (Exception e) {
 			throw new ServiceException(e);

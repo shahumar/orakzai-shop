@@ -36,7 +36,6 @@ public class MiniCartController extends AbstractController{
 			if (cart == null) {
 				req.getSession().removeAttribute(Constants.SHOPPING_CART);
 			}
-			System.out.println(cart.getCode() + "=====================");
 			return cart;
 		} catch (Exception e) {
 			log.error("Error while getting the shopping cart", e);

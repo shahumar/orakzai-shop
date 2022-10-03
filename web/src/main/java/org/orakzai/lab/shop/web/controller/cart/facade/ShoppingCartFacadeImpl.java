@@ -188,13 +188,33 @@ public class ShoppingCartFacadeImpl implements ShoppingCartFacade {
 
 	@Override
 	public ShoppingCartData getShoppingCartData(ShoppingCart shoppingCart) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		ShoppingCartDataPopulator shoppingCartDataPopulator = new ShoppingCartDataPopulator();
+		shoppingCartDataPopulator.setShoppingCartCalculationService(shoppingCartCalculationService);
+		shoppingCartDataPopulator.setPricingService(pricingService);
+		Language language = (Language) getKeyValue(Constants.LANGUAGE);
+		MerchantStore store = (MerchantStore) getKeyValue(Constants.MERCHANT_STORE);
+		
+		return shoppingCartDataPopulator.populate(shoppingCart, store, language);
+	}
+
+	private Object getKeyValue(String key) {
+		ServletRequestAttributes reqAttrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		return reqAttrs.getRequest().getAttribute(key);
 	}
 
 	@Override
 	public ShoppingCartData getShoppingCartData(String code, MerchantStore store) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			ShoppingCart shoppingCart = shoppingCartService.getByCode(code, store);
+			if (shoppingCart != null) {
+				ShoppingCartData cartData = getShoppingCartData(shoppingCart);
+				return cartData;
+			}
+		} catch (NoResultException e) {
+			// TODO: handle exception
+		} catch (Exception e) {
+			log.error("Cannot retrieve cart code", e);
+		}
 		return null;
 	}
 
@@ -227,8 +247,7 @@ public class ShoppingCartFacadeImpl implements ShoppingCartFacade {
 
 	@Override
 	public ShoppingCart getShoppingCartModel(String shoppingCartCode, MerchantStore store) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return shoppingCartService.getByCode(shoppingCartCode, store);
 	}
 
 	@Override
