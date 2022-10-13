@@ -29,7 +29,7 @@
 		<link>
 			<name>annotations</name>
 			<type>2</type>
-			<location>/home/shah/IdeaProjects/orakzai-shop/domain/target/generated-sources/annotations</location>
+			<location>C:/home/shah/IdeaProjects/orakzai-shop/domain/target/generated-sources/annotations</location>
 		</link>
 	</linkedResources>
 </projectDescription>
