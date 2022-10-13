@@ -1,1 +1,4 @@
 /bin/
+*.properties
+*target*
+target/*

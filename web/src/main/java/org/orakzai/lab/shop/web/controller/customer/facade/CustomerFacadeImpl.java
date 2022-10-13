@@ -115,12 +115,19 @@ public class CustomerFacadeImpl implements CustomerFacade {
 							customerCart = shoppingCartService.getById(customerCart.getId(), store);
 							return populateShoppingCartData(customerCart, store, language);
 						} else {
-							if (sessionShoppingCart.getCustomerId() == null) {
-								log.debug("Customer shopping cart as well session cart is available, merging carts");
-								customerCart = shoppingCartService.mergeShoppingCarts(customerCart, sessionShoppingCart, store);
-								customerCart = shoppingCartService.getById(customerCart.getId(), store);
-								return populateShoppingCartData(customerCart, store, language);
-							} 
+							if (sessionShoppingCart.getCustomerId().longValue() == customerModel.getId().longValue()) {
+								if (!customerCart.getShoppingCartCode().equals(sessionShoppingCart.getShoppingCartCode())) {
+									log.debug("Customer shopping cart as well session cart is available, merging carts");
+									customerCart = shoppingCartService.mergeShoppingCarts(customerCart, sessionShoppingCart, store);
+									customerCart = shoppingCartService.getById(customerCart.getId(), store);
+									return populateShoppingCartData(customerCart, store, language);
+								} else {
+									return populateShoppingCartData(sessionShoppingCart,store,language);
+								}
+								
+							} else {
+								return null;
+							}
 						}
 					}
 				} 

@@ -12,7 +12,14 @@ public class ControllerConstants {
 		String DASHBOARD_PRODUCTS_EDIT_TPL = "admin/product.html";
 
 		String STORE_TPL = "admin/merchant.html";
+		
+		
+		public interface Checkout {
 
+			String checkout = "common/checkout/checkout.html";
+			
+		}
+		
 		public interface Customer {
 
 			String customerLogon = "common/customer/logon.html";
