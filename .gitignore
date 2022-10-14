@@ -20,3 +20,5 @@ settings.*
 *.project
 *.classpath
 *.factorypath
+.settings/*
+*.settings/
