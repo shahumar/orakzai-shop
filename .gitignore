@@ -1,4 +1,14 @@
 /bin/
 *.properties
 *target*
-target/*
+*target/*
+target
+.settings
+build.gradle
+settings.gradle
+.project
+.classpath
+gradle
+gradlew
+gradlew.*
+settings.*
