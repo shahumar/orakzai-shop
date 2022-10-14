@@ -1,7 +1,0 @@
-<factorypath>
-    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="C:\Users\admin\Downloads\hibernate-jpamodelgen-5.6.11.Final.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="C:\Users\admin\git\orakzai-shop\libraries\jaxb-api-2.3.1.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="C:\Users\admin\git\orakzai-shop\libraries\hibernate-jpa-2.1-api-1.0.2.Final.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="EXTJAR" id="C:\Users\admin\git\orakzai-shop\libraries\hibernate-jpamodelgen-6.1.2.Final.jar" enabled="true" runInBatchMode="false"/>
-</factorypath>

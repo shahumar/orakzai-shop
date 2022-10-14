@@ -1,5 +1,0 @@
-<infinispan>
-  <cache-container statistics="true">
-    <local-cache name="shopme" statistics="true"/>
-  </cache-container>
-</infinispan>

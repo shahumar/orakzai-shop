@@ -19,3 +19,4 @@ settings.*
 *settings.gradle
 *.project
 *.classpath
+*.factorypath
