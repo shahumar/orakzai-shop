@@ -22,3 +22,5 @@ settings.*
 *.factorypath
 .settings/*
 *.settings/
+application.properties
+*.properties
