@@ -186,28 +186,17 @@ public class ProductController {
 			Optional.ofNullable(plist)
 				.orElse(Collections.emptyList())
 				.stream()
-				.map(product -> {
+				.forEach(product -> {
 					var description = product.getDescriptions().iterator().next();
-					Map<String, String> map = Map.of(
-							"productId", product.getId(), 
-							"name", description.getName(),
-							"sku", product.getSku(),
-							"available", product.isAvailable());
-					return map;
-				})
-				.forEach(entry -> response.addDataEntry(entry));
-			
-			if (plist != null) {
-				for (Product product : plist) {
-					var entry = new HashMap();
-					entry.put("productId", product.getId());
-					ProductDescription description = product.getDescriptions().iterator().next();
+					var entry = new HashMap<String, String>();
+					entry.put("productId", product.getId().toString());
 					entry.put("name", description.getName());
 					entry.put("sku", product.getSku());
-					entry.put("available", product.isAvailable());
+					entry.put("available", Boolean.valueOf(product.isAvailable()).toString());
 					response.addDataEntry(entry);
-				}
-			}
+				});
+			
+			
 			response.setStatus(AjaxPageableResponse.RESPONSE_STATUS_SUCCESS);
 			
 		} catch (Exception e) {
@@ -451,24 +440,23 @@ public class ProductController {
 			Set<ProductDescription> productDescriptions = dbProduct.getDescriptions();
 			for (Language l : languages ) {
 				ProductDescription productDesc = null;
-				for (ProductDescription desc : productDescriptions) {
-					Language lan = desc.getLanguage();
-					if (lan.getCode().equals(l.getCode())) {
-						productDesc = desc;
-					}
-				}
+				productDesc = productDescriptions.stream()
+					.filter(desc -> {
+						return desc.getLanguage()
+							.getCode()
+							.equals(l.getCode());})
+					.findFirst()
+					.get();
 				if (productDesc == null) {
 					productDesc = new ProductDescription();
 					productDesc.setLanguage(l);
 				}
 				descriptions.add(productDesc);
 			}
-			for (ProductImage image : dbProduct.getImages()) {
-				if (image.isDefaultImage()) {
-					product.setProductImage(image);
-					break;
-				}
-			}
+			dbProduct.getImages().stream()
+				.filter(img -> img.isDefaultImage())
+				.findFirst()
+				.ifPresent(image -> product.setProductImage(image));
 			
 			ProductAvailability productAvailability = null;
 			ProductPrice productPrice = null;
@@ -477,13 +465,12 @@ public class ProductController {
 				for (ProductAvailability availability : availabilities) {
 					if (availability.getRegion().equals(org.orakzai.lab.shop.domain.constants.Constants.ALL_REGIONS)) {
 						productAvailability = availability;
-						Set<ProductPrice> prices = availability.getPrices();
-						for (ProductPrice price : prices) {
-							if (price.isDefaultPrice()) {
-								productPrice = price;
-								product.setProductPrice(priceUtil.getAdminFormatedAmount(store, productPrice.getProductPriceAmount()));
-							}
-						}
+						productPrice = availability.getPrices().stream()
+							.filter(price -> price.isDefaultPrice())
+							.findFirst()
+							.get();
+						product.setProductPrice(priceUtil.getAdminFormatedAmount(store, productPrice.getProductPriceAmount()));
+						
 					}
 					
 				}

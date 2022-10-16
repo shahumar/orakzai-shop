@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -147,13 +148,12 @@ public class MerchantStoreController {
 		var currency = store.getCurrency();
 		currency = currencyService.getById(currency.getId());
 		var supportedLanguages = store.getLanguages();
-		var supportedLanguagesList = new ArrayList<Language>();
 		var languagesMap = languageService.getLanguagesMap();
-		for (Language lang : supportedLanguages) {
-			var l = languagesMap.get(lang.getCode());
-			if (l != null)
-				supportedLanguagesList.add(l);
-		}
+		var supportedLanguagesList = supportedLanguages.stream()
+				.map(lang -> languagesMap.get(lang.getCode()))
+				.filter(lang -> lang != null)
+				.collect(Collectors.toList());
+		
 		var defaultLanguage = store.getDefaultLanguage();
 		defaultLanguage = languageService.getByCode(defaultLanguage.getCode());
 		if (defaultLanguage != null) {
