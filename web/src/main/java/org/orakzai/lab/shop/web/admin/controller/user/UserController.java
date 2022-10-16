@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -131,11 +132,11 @@ public class UserController {
 				return "redirect:/admin/users/displayUser.html";
 			}
 			List<Group> groups = dbUser.getGroups();
-			for (Group group : groups) {
-				if (group.getGroupName().equals("SUPERADMIN")) {
-					superAdmin = group;
-				}
-			}
+			superAdmin = groups.stream()
+					.filter(group -> group.getGroupName().equals("SUPERADMIN"))
+					.findFirst()
+					.get();
+			
 		} else {
 			if (user.getAdminPassword().length() < 6) {
 				ObjectError error = new ObjectError("adminPassword", messages.getMessage("message.password.length", null, locale));
@@ -216,13 +217,12 @@ public class UserController {
 	}
 
 	private void populateUserObjects(User user, MerchantStore store, Model model, Locale locale) throws Exception {
-		var groups = new ArrayList<Group>();
 		var userGroups = groupService.listGroup(GroupType.ADMIN);
-		for (Group group : userGroups) {
-			if (!group.getGroupName().equals(Constants.GROUP_SUPERADMIN)) {
-				groups.add(group);
-			}
-		}
+		var groups = userGroups.stream()
+				.filter(group -> !group.getGroupName()
+						.equals(Constants.GROUP_SUPERADMIN))
+				.collect(Collectors.toList());
+		
 		List<MerchantStore> stores = new ArrayList<MerchantStore>();
 		stores = storeService.list();
 		List<SecurityQuestion> questions = new ArrayList<SecurityQuestion>();

@@ -145,7 +145,7 @@ public class InitializationDatabaseImpl implements InitializationDatabase{
 
     private void createModules() throws ServiceException {
         try {
-            List<IntegrationModule> modules = modulesLoader.loadIntegrationModules("reference/integrationmodules.json");
+//            List<IntegrationModule> modules = modulesLoader.loadIntegrationModules("reference/integrationmodules.json");
 //            for (IntegrationModule module : modules)
 //                moduleConfigurationService.create(module);
         } catch (Exception e) {

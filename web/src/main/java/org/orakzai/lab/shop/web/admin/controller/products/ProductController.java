@@ -4,12 +4,15 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -147,10 +150,12 @@ public class ProductController {
 					StringBuilder lineage = new StringBuilder();
 					lineage.append(category.getLineage()).append(category.getId()).append("/");
 					List<Category> categories = categoryService.listByLineage(store, lineage.toString());
-					var categoryIds = new ArrayList<Long>();
-					for (Category cat : categories) {
-						categoryIds.add(cat.getId());
-					}
+					var categoryIds = Optional.ofNullable(categories)
+							.orElse(Collections.emptyList())
+							.stream()
+							.map(cat -> cat.getId())
+							.collect(Collectors.toList());
+					
 					categoryIds.add(category.getId());
 					criteria.setCategoryIds(categoryIds);
 					
@@ -177,6 +182,21 @@ public class ProductController {
 			response.setEndRow(productList.getTotalCount());
 			response.setStartRow(startRow);
 			List<Product> plist = productList.getProducts();
+			
+			Optional.ofNullable(plist)
+				.orElse(Collections.emptyList())
+				.stream()
+				.map(product -> {
+					var description = product.getDescriptions().iterator().next();
+					Map<String, String> map = Map.of(
+							"productId", product.getId(), 
+							"name", description.getName(),
+							"sku", product.getSku(),
+							"available", product.isAvailable());
+					return map;
+				})
+				.forEach(entry -> response.addDataEntry(entry));
+			
 			if (plist != null) {
 				for (Product product : plist) {
 					var entry = new HashMap();

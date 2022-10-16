@@ -24,3 +24,6 @@ settings.*
 *.settings/
 application.properties
 *.properties
+*bin/
+*/bin/
+*/application.properties

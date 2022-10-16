@@ -8,21 +8,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
+import org.orakzai.lab.shop.domain.modules.cms.impl.CacheManager;
 
 @Slf4j
-//@Component("cache")
+@Component("cache")
 public class CacheUtils {
 
 
-//    @Autowired
-//    @Qualifier("serviceCache")
-//    private CacheManager cache;
+    @Autowired
+    @Qualifier("serviceCache")
+    private CacheManager cache;
 
 
 	public final static String REFERENCE_CACHE = "REF";
