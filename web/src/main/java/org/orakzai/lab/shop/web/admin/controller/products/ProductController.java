@@ -438,21 +438,20 @@ public class ProductController {
 			}
 			product.setProduct(dbProduct);
 			Set<ProductDescription> productDescriptions = dbProduct.getDescriptions();
-			for (Language l : languages ) {
-				ProductDescription productDesc = null;
-				productDesc = productDescriptions.stream()
-					.filter(desc -> {
-						return desc.getLanguage()
-							.getCode()
-							.equals(l.getCode());})
-					.findFirst()
-					.get();
-				if (productDesc == null) {
-					productDesc = new ProductDescription();
-					productDesc.setLanguage(l);
-				}
-				descriptions.add(productDesc);
-			}
+			languages.stream()
+				.forEach(l -> {
+					productDescriptions.stream()
+						.filter(desc -> {
+							return desc.getLanguage()
+								.getCode()
+								.equals(l.getCode());})
+						.findFirst()
+						.ifPresentOrElse((desc) -> descriptions.add(desc), () -> {
+							ProductDescription productDesc = new ProductDescription();
+							productDesc.setLanguage(l);
+							descriptions.add(productDesc);
+						});
+				});
 			dbProduct.getImages().stream()
 				.filter(img -> img.isDefaultImage())
 				.findFirst()
@@ -461,6 +460,7 @@ public class ProductController {
 			ProductAvailability productAvailability = null;
 			ProductPrice productPrice = null;
 			Set<ProductAvailability> availabilities = dbProduct.getAvailabilities();
+			
 			if (availabilities != null && availabilities.size() > 0) {
 				for (ProductAvailability availability : availabilities) {
 					if (availability.getRegion().equals(org.orakzai.lab.shop.domain.constants.Constants.ALL_REGIONS)) {

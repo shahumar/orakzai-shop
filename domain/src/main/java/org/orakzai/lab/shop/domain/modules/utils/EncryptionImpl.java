@@ -5,7 +5,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component("encryption")
 public final class EncryptionImpl implements Encryption {
 	
 	private final static String IV_P = "fedcba9876543210";
@@ -13,7 +16,7 @@ public final class EncryptionImpl implements Encryption {
 	private final static String CYPHER_SPEC = "AES/CBC/PKCS5Padding";
 	
 
-
+	@Value("${secretKey}")
     private String  secretKey;
 
 

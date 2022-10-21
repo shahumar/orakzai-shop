@@ -1,25 +1,19 @@
 package org.orakzai.lab.shop.web;
 
 
-import java.util.Arrays;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.orakzai.lab.shop.domain.business.reference.init.service.InitializationDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +30,10 @@ public class ShopApplication implements CommandLineRunner {
 	
 	@Autowired
     private ApplicationContext applicationContext;
-
+	
+	@Autowired
+	private InitializationDatabase initService;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);
 

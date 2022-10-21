@@ -33,19 +33,13 @@ public class CacheUtils {
 
 	public void putInCache(Object object, String keyName) throws Exception {
 
-//		cache.put(keyName, object);
+		cache.getManager().getCache("default").put(keyName, object);
 
 	}
 
 
 	public Object getFromCache(String keyName) throws Exception {
-
-//		ValueWrapper vw = cache.getCache(keyName);
-//		if(vw!=null) {
-//			return vw.get();
-//		}
-		return null;
-
+		return cache.getManager().getCache("default").get(keyName);
 	}
 
 	public List<String> getCacheKeys(MerchantStore store) throws Exception {

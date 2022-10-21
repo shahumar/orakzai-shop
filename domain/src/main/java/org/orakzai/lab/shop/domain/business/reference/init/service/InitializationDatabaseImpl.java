@@ -29,6 +29,7 @@ import org.orakzai.lab.shop.domain.business.reference.zone.model.Zone;
 import org.orakzai.lab.shop.domain.business.reference.zone.model.ZoneDescription;
 import org.orakzai.lab.shop.domain.business.reference.zone.service.ZoneService;
 import org.orakzai.lab.shop.domain.business.system.model.IntegrationModule;
+import org.orakzai.lab.shop.domain.business.system.service.ModuleConfigurationService;
 import org.orakzai.lab.shop.domain.business.tax.model.taxclass.TaxClass;
 import org.orakzai.lab.shop.domain.business.tax.service.TaxClassService;
 import org.orakzai.lab.shop.domain.constants.SchemaConstant;
@@ -77,8 +78,8 @@ public class InitializationDatabaseImpl implements InitializationDatabase{
     @Autowired
     private IntegrationModulesLoader modulesLoader;
 
-//    @Autowired
-//    private ModuleConfigurationService moduleConfigurationService;
+    @Autowired
+    private ModuleConfigurationService moduleConfigurationService;
 
 
     @Autowired
@@ -145,9 +146,9 @@ public class InitializationDatabaseImpl implements InitializationDatabase{
 
     private void createModules() throws ServiceException {
         try {
-//            List<IntegrationModule> modules = modulesLoader.loadIntegrationModules("reference/integrationmodules.json");
-//            for (IntegrationModule module : modules)
-//                moduleConfigurationService.create(module);
+            List<IntegrationModule> modules = modulesLoader.loadIntegrationModules("reference/integrationmodules.json");
+            for (IntegrationModule module : modules)
+                moduleConfigurationService.create(module);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

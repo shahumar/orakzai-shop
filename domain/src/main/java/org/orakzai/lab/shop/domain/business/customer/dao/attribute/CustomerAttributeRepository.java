@@ -8,7 +8,7 @@ import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.springframework.stereotype.Repository;
 
 @Repository("customerAttributeDao")
-public interface CustomerAttributeDao extends SalesManagerEntityDao<Long, CustomerAttribute> {
+public interface CustomerAttributeRepository extends SalesManagerEntityDao<Long, CustomerAttribute> {
 
 //	CustomerAttribute getByOptionId(MerchantStore store, Long customerId, Long id);
 //

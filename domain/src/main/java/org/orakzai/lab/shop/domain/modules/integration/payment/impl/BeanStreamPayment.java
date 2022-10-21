@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Component;
 import org.orakzai.lab.shop.domain.business.customer.model.Customer;
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.business.order.model.Order;

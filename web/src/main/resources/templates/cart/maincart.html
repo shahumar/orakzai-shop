@@ -43,7 +43,7 @@
 									</th:block>
 								</td>
 								<td>
-									<input type="text" class="input-small quantity"
+									<input type="number" class="input-small quantity"
 										placeholder="Quantity" th:value="${shoppingCartItem.quantity}"
 										name="quantity" th:id="${shoppingCartItem.id}"
 										th:readonly="${shoppingCartItem.productVirtual==true}" />
@@ -86,9 +86,9 @@
 						<button type="button" class="btn"
 							onClick="javascript:updateCart('#mainCartTable');">
 							Racalculate</button>
-						<button id="checkoutButton" type="submit" class="btn btn-success">
-							Place your order</button>
-					</div>
+							<button id="checkoutButton" type="submit" class="btn btn-success">
+								Place your order</button>
+						</div>
 				</div>
 			</th:block>
 		</th:block>
@@ -110,7 +110,6 @@
 
 		<script>
 			$(document).ready(function() {
-				$('.quantity').numeric();
 				$("input[type='text']").keypress(function(e) {
 					if (e.which == 13) {
 						e.preventDefault();

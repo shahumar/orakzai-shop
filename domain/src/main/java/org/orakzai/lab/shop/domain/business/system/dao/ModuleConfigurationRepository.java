@@ -14,5 +14,7 @@ public interface ModuleConfigurationRepository extends SalesManagerEntityDao<Lon
 	List<IntegrationModule> findAllByConfiguration(String module);
 
 	Optional<IntegrationModule> findByCode(String moduleCode);
+	
+	List<IntegrationModule> findAllByModule(String module);
 
 }

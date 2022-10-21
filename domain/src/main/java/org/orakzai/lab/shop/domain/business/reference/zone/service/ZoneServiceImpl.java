@@ -12,6 +12,8 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.orakzai.lab.shop.domain.business.generic.exception.ServiceException;
 import org.orakzai.lab.shop.domain.business.generic.service.SalesManagerEntityServiceImpl;
 import org.orakzai.lab.shop.domain.business.reference.country.model.Country;
@@ -23,6 +25,7 @@ import org.orakzai.lab.shop.domain.business.reference.zone.model.ZoneDescription
 import org.orakzai.lab.shop.domain.constants.Constants;
 import org.orakzai.lab.shop.domain.utils.CacheUtils;
 
+@Slf4j
 @Service("zoneService")
 @CacheConfig(cacheNames = "shopme")
 public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> implements
@@ -32,10 +35,9 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 
 	private ZoneRepository zoneRepository;
 
-//	@Autowired
-//	private CacheUtils cache;
+	@Autowired
+	private CacheUtils cache;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZoneServiceImpl.class);
 
 	@Autowired
 	public ZoneServiceImpl(ZoneRepository zoneRepository) {
@@ -79,7 +81,7 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("getZones()", e);
+			log.error("getZones()", e);
 		}
 		return zones;
 	}
@@ -89,31 +91,24 @@ public class ZoneServiceImpl extends SalesManagerEntityServiceImpl<Long, Zone> i
 	public Map<String, Zone> getZones(Language language) throws ServiceException {
 
 		Map<String, Zone> zones = null;
-//		try {
-//
-//			String cacheKey = ZONE_CACHE_PREFIX + language.getCode();
-//
-//			zones = (Map<String, Zone>) cache.getFromCache(cacheKey);
-//
-//
-//
-//			if(zones==null) {
-//				zones = new HashMap<String, Zone>();
-//				List<Zone> zns = zoneDao.listByLanguage(language);
-//
-//				//set names
-//				for(Zone zone : zns) {
-//					ZoneDescription description = zone.getDescriptions().get(0);
-//					zone.setName(description.getName());
-//					zones.put(zone.getCode(), zone);
-//
-//				}
-//				cache.putInCache(zones, cacheKey);
-//			}
-//
-//		} catch (Exception e) {
-//			LOGGER.error("getZones()", e);
-//		}
+		try {
+			String cacheKey = ZONE_CACHE_PREFIX + language.getCode();
+			zones = (Map<String, Zone>) cache.getFromCache(cacheKey);
+			if(zones==null) {
+				zones = new HashMap<String, Zone>();
+				List<Zone> zns = zoneRepository.findAllByLanguage(language);
+				for(Zone zone : zns) {
+					ZoneDescription description = zone.getDescriptions().get(0);
+					zone.setName(description.getName());
+					zones.put(zone.getCode(), zone);
+
+				}
+				cache.putInCache(zones, cacheKey);
+			}
+
+		} catch (Exception e) {
+			log.error("getZones()", e);
+		}
 		return zones;
 
 

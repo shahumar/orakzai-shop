@@ -12,6 +12,13 @@ public class ControllerConstants {
 		String DASHBOARD_PRODUCTS_EDIT_TPL = "admin/product.html";
 
 		String STORE_TPL = "admin/merchant.html";
+
+		public interface Payment {
+
+			String paymentMethods = "admin/payment/paymentMethods.html";
+			String paymentMethod = "admin/payment/paymentMethod.html";
+			
+		}
 		
 		
 		public interface Checkout {

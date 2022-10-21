@@ -2,7 +2,6 @@ package org.orakzai.lab.shop.web.config;
 
 import java.util.Locale;
 
-
 import org.orakzai.lab.shop.web.filter.AdminFilter;
 import org.orakzai.lab.shop.web.filter.ShopFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 
@@ -63,4 +61,7 @@ public class ShopConfig implements WebMvcConfigurer {
 		lci.setParamName("language");
 		return lci;
 	}
+	
+	
+	
 }

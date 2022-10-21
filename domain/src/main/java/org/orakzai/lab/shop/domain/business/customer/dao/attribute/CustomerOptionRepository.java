@@ -9,8 +9,8 @@ import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
 import org.springframework.stereotype.Repository;
 
-@Repository("customerOptionDao")
-public interface CustomerOptionDao extends SalesManagerEntityDao<Long, CustomerOption> {
+@Repository("customerOptionRepository")
+public interface CustomerOptionRepository extends SalesManagerEntityDao<Long, CustomerOption> {
 
 //	List<CustomerOption> listByStore(MerchantStore store, Language language);
 //

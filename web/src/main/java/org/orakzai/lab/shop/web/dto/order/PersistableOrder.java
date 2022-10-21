@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.orakzai.lab.shop.web.dto.customer.PersistableCustomer;
 
+import lombok.Data;
+
+@Data
 public class PersistableOrder extends OrderEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

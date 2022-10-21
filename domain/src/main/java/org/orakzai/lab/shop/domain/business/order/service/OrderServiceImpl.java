@@ -164,7 +164,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
     }
 
-    private OrderTotalSummary caculateOrder(final OrderSummary summary, final Customer customer, final MerchantStore store, final Language language) throws Exception {
+    private OrderTotalSummary calculateOrder(final OrderSummary summary, final Customer customer, final MerchantStore store, final Language language) throws Exception {
 
         OrderTotalSummary totalSummary = new OrderTotalSummary();
         List<OrderTotal> orderTotals = new ArrayList<OrderTotal>();
@@ -331,14 +331,14 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
 
     @Override
-    public OrderTotalSummary caculateOrderTotal(final OrderSummary orderSummary, final Customer customer, final MerchantStore store, final Language language) throws ServiceException {
+    public OrderTotalSummary calculateOrderTotal(final OrderSummary orderSummary, final Customer customer, final MerchantStore store, final Language language) throws ServiceException {
         Validate.notNull(orderSummary,"Order summary cannot be null");
         Validate.notNull(orderSummary.getProducts(),"Order summary.products cannot be null");
         Validate.notNull(store,"MerchantStore cannot be null");
         Validate.notNull(customer,"Customer cannot be null");
 
         try {
-            return caculateOrder(orderSummary, customer, store, language);
+            return calculateOrder(orderSummary, customer, store, language);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -348,13 +348,13 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
 
     @Override
-    public OrderTotalSummary caculateOrderTotal(final OrderSummary orderSummary, final MerchantStore store, final Language language) throws ServiceException {
+    public OrderTotalSummary calculateOrderTotal(final OrderSummary orderSummary, final MerchantStore store, final Language language) throws ServiceException {
         Validate.notNull(orderSummary,"Order summary cannot be null");
         Validate.notNull(orderSummary.getProducts(),"Order summary.products cannot be null");
         Validate.notNull(store,"MerchantStore cannot be null");
 
         try {
-            return caculateOrder(orderSummary, null, store, language);
+            return calculateOrder(orderSummary, null, store, language);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -373,7 +373,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
     	orderSummary.setProducts(itemsSet);
 
 
-    	return this.caculateOrder(orderSummary, customer, store, language);
+    	return this.calculateOrder(orderSummary, customer, store, language);
 
     }
 

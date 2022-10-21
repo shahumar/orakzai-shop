@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<body>
+
+	<div th:fragment="paypal">
+		<div class="control-group">
+			<label class="required">Paypal client id</label>
+			<div class="controls">
+				<input cssClass="input-xxlarge highlight"
+					path="integrationKeys['client']" />
+			</div>
+			<span class="help-inline"> <span th:if="${client!=null}"
+				id="identifiererrors" class="error"> Field in error </span>
+			</span>
+		</div>
+
+		<div class="control-group">
+			<label class="required">PayPal Secret</label>
+			<div class="controls">
+				<input cssClass="input-xxlarge highlight"
+					path="integrationKeys['secret']" />
+			</div>
+			<span class="help-inline"> <span id="apikeyerrors"
+				th:if="${secret!=null}" class="error">Field in error</span>
+			</span>
+		</div>
+
+
+		<div class="control-group">
+			<label class="required">Transaction type</label>
+			<div class="controls">
+				<input type="radio" cssClass="input-large highlight"
+					path="integrationKeys['transaction']" value="AUTHORIZE" /> &nbsp;
+				Pre-authorization <br /> <input type="radio"
+					cssClass="input-large highlight"
+					path="integrationKeys['transaction']" value="AUTHORIZECAPTURE" />
+				&nbsp; Sale </br>
+			</div>
+		</div>
+	</div>
+
+	<div th:fragment="paypal-express-checkout">
+		<div class="control-group">
+			<label class="required">Paypal API user name</label>
+			<div class="controls">
+				<input class="input-large highlight"
+					th:field="*{integrationKeys['username']}" />
+			</div>
+			<span class="help-inline">
+				<span id="identifiererrors" class="error" th:if="${username!=null}">Field in error</span>
+			</span>
+		</div>
+
+		<div class="control-group">
+			<label class="required">Paypal API password</label>
+			<div class="controls">
+				<input cssClass="input-large highlight"
+					th:field="*{integrationKeys['api']}" />
+			</div>
+			<span class="help-inline">
+				<span id="apikeyerrors" class="error" th:if="${api!=null}">Field in error</span>
+			</span>
+		</div>
+
+		<div class="control-group">
+			<label class="required">Paypal API signature</label>
+			<div class="controls">
+				<input class="input-large highlight"
+					th:field="*{integrationKeys['signature']}" />
+			</div>
+			<span class="help-inline">
+				<span id="apisignatureerrors" th:if="${signature!=null}" class="error">Field in error</span>
+			</span>
+		</div>
+
+		<div class="control-group">
+			<label class="required">Transaction type</label>
+			<div class="controls">
+				<input type="radio" class="input-large highlight"
+					th:field="*{integrationKeys['transaction']}" value="AUTHORIZE" />
+				&nbsp;
+				Pre-authorization 
+				<br />
+				<input type="radio" class="input-large highlight"
+					th:field="*{integrationKeys['transaction']}" value="AUTHORIZECAPTURE" />
+				&nbsp;
+				Sale
+				</br>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

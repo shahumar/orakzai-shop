@@ -21,5 +21,9 @@ public interface ZoneRepository extends SalesManagerEntityDao<Long,Zone> {
 			+ "where d.language=:language and z.country=:country "
 			+ "order by d.name ASC")
 	List<Zone> findAllByLanguageAndCountry(Country country, Language language);
+	
+	
+	@Query("select z from Zone z left join fetch z.descriptions d where d.language=:language order by d.name ASC")
+	List<Zone> findAllByLanguage(Language language);
 
 }

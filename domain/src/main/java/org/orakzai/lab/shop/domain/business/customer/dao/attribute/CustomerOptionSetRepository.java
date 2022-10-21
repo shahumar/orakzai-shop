@@ -9,7 +9,7 @@ import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
 import org.springframework.stereotype.Repository;
 
 @Repository("customerOptionSetDao")
-public interface CustomerOptionSetDao extends SalesManagerEntityDao<Long, CustomerOptionSet> {
+public interface CustomerOptionSetRepository extends SalesManagerEntityDao<Long, CustomerOptionSet> {
 //
 //	List<CustomerOptionSet> getByOptionId(MerchantStore store, Long id);
 //

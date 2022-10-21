@@ -25,11 +25,11 @@ public interface OrderService extends SalesManagerEntityService<Long, Order> {
                     throws ServiceException;
 
 
-    OrderTotalSummary caculateOrderTotal(OrderSummary orderSummary,
+    OrderTotalSummary calculateOrderTotal(OrderSummary orderSummary,
                                          Customer customer, MerchantStore store, Language language)
                                                          throws ServiceException;
 
-    OrderTotalSummary caculateOrderTotal(OrderSummary orderSummary,
+    OrderTotalSummary calculateOrderTotal(OrderSummary orderSummary,
                                          MerchantStore store, Language language) throws ServiceException;
 
 

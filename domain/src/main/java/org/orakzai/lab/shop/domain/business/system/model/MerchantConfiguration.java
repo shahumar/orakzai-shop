@@ -46,7 +46,9 @@ public class MerchantConfiguration extends SalesManagerEntity<Long, MerchantConf
     private String key;
 
 
+    @Lob
     @Column(name="VALUE")
+    @Type(type = "org.hibernate.type.TextType")
     private String value;
 
     @Column(name="TYPE")

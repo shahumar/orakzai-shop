@@ -1,51 +1,38 @@
 package org.orakzai.lab.shop.domain.business.payments.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-
 import org.orakzai.lab.shop.domain.business.customer.model.Customer;
 import org.orakzai.lab.shop.domain.business.generic.exception.ServiceException;
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.business.order.model.Order;
-import org.orakzai.lab.shop.domain.business.order.model.OrderTotal;
-import org.orakzai.lab.shop.domain.business.order.model.OrderTotalType;
-import org.orakzai.lab.shop.domain.business.order.model.orderstatus.OrderStatus;
-import org.orakzai.lab.shop.domain.business.order.model.orderstatus.OrderStatusHistory;
 import org.orakzai.lab.shop.domain.business.order.service.OrderService;
-import org.orakzai.lab.shop.domain.business.payments.model.CreditCardPayment;
 import org.orakzai.lab.shop.domain.business.payments.model.CreditCardType;
 import org.orakzai.lab.shop.domain.business.payments.model.Payment;
 import org.orakzai.lab.shop.domain.business.payments.model.PaymentMethod;
-import org.orakzai.lab.shop.domain.business.payments.model.PaymentType;
 import org.orakzai.lab.shop.domain.business.payments.model.Transaction;
-import org.orakzai.lab.shop.domain.business.payments.model.TransactionType;
 import org.orakzai.lab.shop.domain.business.shoppingcart.model.ShoppingCartItem;
 import org.orakzai.lab.shop.domain.business.system.model.IntegrationConfiguration;
 import org.orakzai.lab.shop.domain.business.system.model.IntegrationModule;
 import org.orakzai.lab.shop.domain.business.system.model.MerchantConfiguration;
 import org.orakzai.lab.shop.domain.business.system.service.MerchantConfigurationService;
 import org.orakzai.lab.shop.domain.business.system.service.ModuleConfigurationService;
-import org.orakzai.lab.shop.domain.constants.Constants;
 import org.orakzai.lab.shop.domain.modules.integration.IntegrationException;
 import org.orakzai.lab.shop.domain.modules.integration.payment.model.PaymentModule;
 import org.orakzai.lab.shop.domain.modules.utils.Encryption;
 import org.orakzai.lab.shop.domain.utils.reference.ConfigurationModulesLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 
 @Service("paymentService")
 public class PaymentServiceImpl implements PaymentService {
@@ -67,29 +54,26 @@ public class PaymentServiceImpl implements PaymentService {
 	@Lazy
 	private OrderService orderService;
 
-//	@Autowired
-//	@Resource(name="paymentModules")
-//	private Map<String,PaymentModule> paymentModules;
-//
-//	@Autowired
-//	private Encryption encryption;
+	@Autowired
+	@Resource(name="paymentModules")
+	private Map<String,PaymentModule> paymentModules;
+
+	@Autowired
+	private Encryption encryption;
 
 	@Override
 	public List<IntegrationModule> getPaymentMethods(MerchantStore store) throws ServiceException {
 
-//		List<IntegrationModule> modules =  moduleConfigurationService.getIntegrationModules(PAYMENT_MODULES);
-//		List<IntegrationModule> returnModules = new ArrayList<IntegrationModule>();
-//
-//		for(IntegrationModule module : modules) {
-//			if(module.getRegionsSet().contains(store.getCountry().getIsoCode())
-//					|| module.getRegionsSet().contains("*")) {
-//
-//				returnModules.add(module);
-//			}
-//		}
-//
-//		return returnModules;
-		return null;
+		var modules =  moduleConfigurationService.getIntegrationModules(PAYMENT_MODULES);
+		return modules.stream()
+			.filter(module -> module
+					.getRegionsSet()
+					.contains(store
+							.getCountry()
+							.getIsoCode()) || module
+					.getRegionsSet()
+					.contains("*"))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -185,72 +169,70 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public Map<String,IntegrationConfiguration> getPaymentModulesConfigured(MerchantStore store) throws ServiceException {
 
-//		try {
-//
-//			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
-//			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(PAYMENT_MODULES, store);
-//			if(merchantConfiguration!=null) {
-//
-//				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
-//
-//					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
-//					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
-//
-//
-//				}
-//			}
-//			return modules;
-//
-//		} catch (Exception e) {
-//			throw new ServiceException(e);
-//		}
-		return null;
+		try {
+
+			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
+			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(PAYMENT_MODULES, store);
+			if(merchantConfiguration!=null) {
+
+				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
+
+					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
+					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
+
+
+				}
+			}
+			return modules;
+
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
 	}
 
 	@Override
 	public void savePaymentModuleConfiguration(IntegrationConfiguration configuration, MerchantStore store) throws ServiceException {
 
-		//validate entries
-//		try {
-//
-//			String moduleCode = configuration.getModuleCode();
-//			PaymentModule module = (PaymentModule)paymentModules.get(moduleCode);
-//			if(module==null) {
-//				throw new ServiceException("Payment module " + moduleCode + " does not exist");
-//			}
-//			module.validateModuleConfiguration(configuration, store);
-//
-//		} catch (IntegrationException ie) {
-//			throw ie;
-//		}
-//
-//		try {
-//			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
-//			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(PAYMENT_MODULES, store);
-//			if(merchantConfiguration!=null) {
-//				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
-//
-//					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
-//
-//					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
-//				}
-//			} else {
-//				merchantConfiguration = new MerchantConfiguration();
-//				merchantConfiguration.setMerchantStore(store);
-//				merchantConfiguration.setKey(PAYMENT_MODULES);
-//			}
-//			modules.put(configuration.getModuleCode(), configuration);
-//
-//			String configs =  ConfigurationModulesLoader.toJSONString(modules);
-//
-//			String encrypted = encryption.encrypt(configs);
-//			merchantConfiguration.setValue(encrypted);
-//
-//			merchantConfigurationService.saveOrUpdate(merchantConfiguration);
-//
-//		} catch (Exception e) {
-//			throw new ServiceException(e);
-//		}
+		try {
+
+			String moduleCode = configuration.getModuleCode();
+			PaymentModule module = (PaymentModule)paymentModules.get(moduleCode);
+			if(module==null) {
+				throw new ServiceException("Payment module " + moduleCode + " does not exist");
+			}
+			module.validateModuleConfiguration(configuration, store);
+
+		} catch (IntegrationException ie) {
+			throw ie;
+		}
+
+		try {
+			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
+			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(PAYMENT_MODULES, store);
+			if(merchantConfiguration!=null) {
+				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
+
+					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
+
+					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
+				}
+			} else {
+				merchantConfiguration = new MerchantConfiguration();
+				merchantConfiguration.setMerchantStore(store);
+				merchantConfiguration.setKey(PAYMENT_MODULES);
+			}
+			modules.put(configuration.getModuleCode(), configuration);
+
+			String configs =  ConfigurationModulesLoader.toJSONString(modules);
+
+			String encrypted = encryption.encrypt(configs);
+			merchantConfiguration.setValue(encrypted);
+
+			merchantConfigurationService.saveOrUpdate(merchantConfiguration);
+
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
    }
 
 	@Override

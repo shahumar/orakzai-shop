@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+
+	<div class="tabbable" layout:fragment="body">
+
+		<div th:replace="fragments/admin_tabs :: adminTab" />
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="payment-methods">
+				<div class="sm-ui-component">
+					<h3>
+						Payment configuration
+					</h3>
+					<br />
+					<form method="POST" 
+						action="/admin/payments/savePaymentMethods.html">
+						
+						<div id="store.success" class="alert alert-success"
+							style="display: block;">Request successfull</div>
+						<div class="control-group">
+							<table class="table table-hover">
+								<tr th:each="module : ${modules}">
+									<td>
+										<img th:if="${ configuredModules != null && configuredModules[module.code] != null && configuredModules[module.code].active==true}" th:src="@{img/icon_red_on.gif}" width="12" />
+										<img th:unless="${configuredModules != null && configuredModules[module.code] != null && configuredModules[module.code].active==true}" th:src="@{mg/icon_red_on.gif}" width="12" />
+									</td>
+									<td>
+										<label> 
+											<a th:if="${module.customModule==true}" th:href="@{/admin/payments/${module.code}.html}">
+												No label found - [[${module.code}]]
+											</a>
+											<a th:unless="${module.customModule==true}" th:href="@{'/admin/payments/paymentMethod.html?code=' + ${module.code}}">
+												No label found - [[${module.code}]]
+											</a>
+										
+										</label>
+									</td>
+									<td>
+										<th:block th:if="${module.image!=null}">
+											<img src="/resources/img/payment/${module.image}">
+	      			  					</th:block>
+	      			  				</td>
+								</tr>
+							</table>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

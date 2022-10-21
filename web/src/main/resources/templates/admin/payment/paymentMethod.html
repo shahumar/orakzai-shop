@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+
+	<div class="tabbable" layout:fragment="body">
+
+		<div th:replace="fragments/admin_tabs :: adminTab"></div>
+		<div class="tab-pane active" id="payment-method">
+			<div class="sm-ui-component">
+				<h3>
+					Payment method
+					-
+					No label found - [[${configuration.moduleCode}]]
+				</h3>
+				<br />
+				<p>	</p>
+				<br />
+
+				<c:url var="savePaymentMethod"
+					value="/admin/payments/savePaymentMethod.html" />
+
+
+				<form method="POST" th:object="${configuration}"
+					th:action="@{/admin/payments/savePaymentMethod.html}">
+					<th:block th:if="${#fields.hasAnyErrors()}">
+                       	<div id="store.error" class="alert alert-error" style="display:none;">An error occured</div>
+                       	<div class="alert alert-error" th:each="err : ${#fields.allErrors()}" th:text="${err}"/>
+                    </th:block>
+
+					<div id="store.success" class="alert alert-success" style="">
+						Request successfull
+					</div>
+
+
+					<div class="control-group">
+						<label>Module enabled</label>
+						<div class="controls">
+							<input type="checkbox" th:field="*{active}" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label>Default</label>
+						<div class="controls">
+							<input type="checkbox" th:field="*{defaultSelected}" />
+						</div>
+					</div>
+
+					<div class="controls">
+						<label>Environment</label>
+						<div class="controls">
+							<select th:field="*{environment}">
+								<option th:each="item : ${environments}" th:value="${item}" th:text="${item}"/>
+							</select>
+						</div>
+						<span th:errorclass="error" th:errors="*{environment}" th:if="${#fields.hasErrors('environment')}"/>
+						
+					</div>
+
+
+					<th:block th:if="${customConfiguration==null}">
+						<div th:insert="admin/payment/payments :: (${configuration.moduleCode})"></div>
+					</th:block>
+
+
+					<input type="hidden" th:field="*{moduleCode}" />
+					<div class="form-actions">
+						<div class="pull-right">
+							<button type="submit" class="btn btn-success">
+								Submit
+							</button>
+						</div>
+					</div>
+				</form>
+
+
+
+				<th:block th:if="${customConfiguration!=null}">
+					<div th:insert="admin/payment/payments :: (${configuration.moduleCode})"></div>
+				</th:block>
+
+
+				<th:block th:if="${configuration.active && validationError==null}">
+					<form method="POST" enctype="multipart/form-data"
+						th:object="${code}" action="/admin/payments/deletePaymentMethod.html">
+						<input type="hidden" name="code"
+							th:value="${configuration.moduleCode}" />
+						<div class="form-actions">
+							<div class="pull-right">
+								<button type="submit" class="btn-danger">
+									<i class="icon-trash icon-large"></i>
+									Remove
+								</button>
+							</div>
+						</div>
+					</form>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
