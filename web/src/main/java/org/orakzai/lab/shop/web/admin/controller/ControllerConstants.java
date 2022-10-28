@@ -13,6 +13,12 @@ public class ControllerConstants {
 
 		String STORE_TPL = "admin/merchant.html";
 
+		public interface Pages {
+
+			String timeout = "pages/shop/common/timeout.html";
+			
+		}
+
 		public interface Payment {
 
 			String paymentMethods = "admin/payment/paymentMethods.html";

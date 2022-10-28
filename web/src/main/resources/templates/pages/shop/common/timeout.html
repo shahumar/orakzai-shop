@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/base.html}">
+<body>
+
+
+	<th:block layout:fragment="body">
+		<div id="main-content">
+
+			<table>
+				<tr>
+					<td><img th:src="@{/img/important-icon.png}" width="50"></td>
+
+					<td><h3>
+							The request timed out
+						</h3></td>
+				</tr>
+			</table>
+
+		</div>
+
+	</th:block>
+</body>
+</html>

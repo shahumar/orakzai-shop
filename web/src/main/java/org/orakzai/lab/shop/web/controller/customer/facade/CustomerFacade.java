@@ -17,7 +17,10 @@ public interface CustomerFacade {
 
 	Customer getCustomerModel(PersistableCustomer customer, MerchantStore store, Language language) throws Exception;
 	
-	public void setCustomerModelDefaultProperties(Customer customer, MerchantStore store) throws Exception; 
+	public void setCustomerModelDefaultProperties(Customer customer, MerchantStore store) throws Exception;
+
+	Customer populateCustomerModel(Customer authCustomer, PersistableCustomer customer, MerchantStore store,
+			Language language) throws Exception; 
 	
 	
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository("merchantLogDao")
-public interface MerchantLogDao extends SalesManagerEntityDao<Long, MerchantLog> {
+public interface MerchantLogRepository extends SalesManagerEntityDao<Long, MerchantLog> {
 
 
 //	List<MerchantLog> listByMerchant(MerchantStore store);

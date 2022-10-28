@@ -35,4 +35,34 @@ public class FilePathUtils {
 		return resourcePath.toString();
 	}
 
+	public static String buildCustomerUri(MerchantStore store, String contextPath) {
+		StringBuilder path = new StringBuilder();
+		String scheme = Constants.HTTP_SCHEME;
+		
+		String domainName = store.getDomainName();
+		if (StringUtils.isBlank(domainName))
+			domainName = Constants.DEFAULT_DOMAIN_NAME;
+		
+		return path.append(scheme)
+			.append("://")
+			.append(domainName)
+			.append(contextPath)
+			.toString();
+
+	}
+
+	public static String buildStoreUri(MerchantStore store, String contextPath) {
+		StringBuilder path = new StringBuilder();
+		String scheme = Constants.HTTP_SCHEME;
+		
+		String domainName = store.getDomainName();
+		if (StringUtils.isBlank(domainName))
+			domainName = Constants.DEFAULT_DOMAIN_NAME;
+		return path.append(scheme)
+				.append("://")
+				.append(domainName)
+				.append(contextPath)
+				.toString();
+	}
+
 }

@@ -597,7 +597,7 @@
 				th:if="${!#authorization.expression('hasRole(''AUTH_CUSTOMER'')')}">
 				Logon or signup to simplify the online purchase process!</p>
 			<form id="checkoutForm" method="POST" enctype="multipart/form-data"
-				object="${order}" action="@{/shop/order/commitOrder.html}">
+				object="${order}" th:action="@{/shop/order/commitOrder.html}">
 				<div class="row-fluid" id="checkout">
 					<div class="span12">
 						<!-- If error messages -->

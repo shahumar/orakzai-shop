@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.transaction.Transaction;
+import javax.validation.Valid;
 
 import org.orakzai.lab.shop.domain.business.customer.model.Customer;
 import org.orakzai.lab.shop.domain.business.generic.exception.ServiceException;
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.business.order.model.Order;
 import org.orakzai.lab.shop.domain.business.order.model.OrderTotalSummary;
+import org.orakzai.lab.shop.domain.business.payments.model.Transaction;
 import org.orakzai.lab.shop.domain.business.reference.country.model.Country;
 import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
 import org.orakzai.lab.shop.domain.business.shipping.model.ShippingQuote;
@@ -60,4 +61,5 @@ public interface OrderFacade {
 	
 	ReadableOrderList getReadableOrderList(MerchantStore store, int start,
 			int maxCount, Language language) throws Exception;
+
 }

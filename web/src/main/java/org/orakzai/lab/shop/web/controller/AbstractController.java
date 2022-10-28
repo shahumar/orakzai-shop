@@ -16,4 +16,9 @@ public class AbstractController {
 		SessionUtil.setSessionAttribute(key, value, req);
 		
 	}
+
+	public void removeAttribute(String key, HttpServletRequest req) {
+		SessionUtil.removeSessionAttribute(key, req);
+		
+	}
 }

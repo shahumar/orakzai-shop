@@ -15,4 +15,9 @@ public class SessionUtil {
 		
 	}
 
+	public static void removeSessionAttribute(String key, HttpServletRequest req) {
+		req.getSession().removeAttribute(key);
+		
+	}
+
 }

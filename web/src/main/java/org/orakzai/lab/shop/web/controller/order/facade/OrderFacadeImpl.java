@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.transaction.Transaction;
 
 import org.orakzai.lab.shop.domain.business.common.model.Billing;
 import org.orakzai.lab.shop.domain.business.common.model.Delivery;
@@ -17,6 +16,7 @@ import org.orakzai.lab.shop.domain.business.order.model.OrderSummary;
 import org.orakzai.lab.shop.domain.business.order.model.OrderTotalSummary;
 import org.orakzai.lab.shop.domain.business.order.model.orderstatus.OrderStatus;
 import org.orakzai.lab.shop.domain.business.order.service.OrderService;
+import org.orakzai.lab.shop.domain.business.payments.model.Transaction;
 import org.orakzai.lab.shop.domain.business.reference.country.model.Country;
 import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
 import org.orakzai.lab.shop.domain.business.shipping.model.ShippingQuote;

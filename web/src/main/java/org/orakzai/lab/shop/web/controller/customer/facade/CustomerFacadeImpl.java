@@ -226,6 +226,25 @@ public class CustomerFacadeImpl implements CustomerFacade {
 		}
 		
 	}
+	
+	@Override
+	public Customer populateCustomerModel(Customer customerModel, PersistableCustomer customer, MerchantStore store,
+			Language language) throws Exception {
+		log.info( "Starting to populate customer model from customer data" );
+        CustomerPopulator populator = new CustomerPopulator();
+        populator.setCountryService(countryService);
+        populator.setCustomerOptionService(customerOptionService);
+        populator.setCustomerOptionValueService(customerOptionValueService);
+        populator.setLanguageService(languageService);
+        populator.setLanguageService(languageService);
+        populator.setZoneService(zoneService);
+
+        customerModel = populator.populate( customer, customerModel, store, language );
+        log.info( "About to persist customer to database." );
+        customerService.saveOrUpdate( customerModel );
+        return customerModel;
+
+	}
 
 	private ShoppingCartData populateShoppingCartData(ShoppingCart cartModel, MerchantStore store,
 			Language language) {
