@@ -118,6 +118,7 @@ public class ShoppingOrderController extends AbstractController {
 	@Autowired
 	private OrderService orderService;
 
+	@SuppressWarnings("unused")
 	@GetMapping("/checkout.html")
 	public String displayCheckout(@CookieValue("cart") String cookie, Model model, HttpServletRequest req, HttpServletResponse resp, Locale locale) throws Exception {
 		Language language = (Language) req.getAttribute(Constants.LANGUAGE);
@@ -517,7 +518,7 @@ public class ShoppingOrderController extends AbstractController {
         	} 
         	emailTemplateUtils.sendOrderEmail(modelCustomer, modelOrder, locale, language, store, req.getContextPath());
         	if (orderService.hasDownloadFiles(modelOrder)) {
-        		emailTemplateUtils.sendOrderDownloadEmail(modelCustomer, modelOrder, store, locale, req.getContextPath())
+        		emailTemplateUtils.sendOrderDownloadEmail(modelCustomer, modelOrder, store, locale, req.getContextPath());
         	}
         	
         } catch (Exception e) {
