@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
+import org.apache.commons.collections.CollectionUtils;
 import org.orakzai.lab.shop.domain.business.common.model.Billing;
 import org.orakzai.lab.shop.domain.business.common.model.Delivery;
 import org.orakzai.lab.shop.domain.business.customer.model.Customer;
@@ -19,10 +19,13 @@ import org.orakzai.lab.shop.domain.business.order.service.OrderService;
 import org.orakzai.lab.shop.domain.business.payments.model.Transaction;
 import org.orakzai.lab.shop.domain.business.reference.country.model.Country;
 import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
+import org.orakzai.lab.shop.domain.business.shipping.model.ShippingProduct;
 import org.orakzai.lab.shop.domain.business.shipping.model.ShippingQuote;
 import org.orakzai.lab.shop.domain.business.shipping.model.ShippingSummary;
+import org.orakzai.lab.shop.domain.business.shipping.service.ShippingService;
 import org.orakzai.lab.shop.domain.business.shoppingcart.model.ShoppingCart;
 import org.orakzai.lab.shop.domain.business.shoppingcart.model.ShoppingCartItem;
+import org.orakzai.lab.shop.domain.business.shoppingcart.service.ShoppingCartService;
 import org.orakzai.lab.shop.web.controller.customer.facade.CustomerFacade;
 import org.orakzai.lab.shop.web.dto.customer.PersistableCustomer;
 import org.orakzai.lab.shop.web.dto.order.OrderEntity;
@@ -44,6 +47,12 @@ public class OrderFacadeImpl implements OrderFacade {
 	
 	@Autowired
 	private OrderService orderService;
+
+	@Autowired
+	private ShoppingCartService shoppingCartService;
+
+	@Autowired
+	private ShippingService shippingService;
 
 	@Override
 	public ShopOrder initializeOrder(MerchantStore store, Customer customer, ShoppingCart shoppingCart,
@@ -162,10 +171,29 @@ public class OrderFacadeImpl implements OrderFacade {
 	}
 
 	@Override
-	public ShippingQuote getShippingQuote(PersistableCustomer customer, ShoppingCart cart, ShopOrder order,
+	public ShippingQuote getShippingQuote(PersistableCustomer persistableCustomer, ShoppingCart cart, ShopOrder order,
 			MerchantStore store, Language language) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<ShippingProduct> shippingProducts = shoppingCartService.createShippingProduct(cart);
+		if (CollectionUtils.isEmpty(shippingProducts)) {
+			return null;
+		}
+		Customer customer = customerFacade.getCustomerModel(persistableCustomer, store, language);
+		Delivery delivery = new Delivery();
+		
+		if (order.isShipToBillingAdress()) {
+			Billing billing = customer.getBilling();
+			delivery.setAddress(billing.getAddress());
+			delivery.setCompany(billing.getCompany());
+			delivery.setPostalCode(billing.getPostalCode());
+			delivery.setState(billing.getState());
+			delivery.setCountry(billing.getCountry());
+			delivery.setZone(billing.getZone());
+		} else {
+			delivery = customer.getDelivery();
+		}
+		ShippingQuote quote = shippingService.getShippingQuote(store, delivery, shippingProducts, language);
+		
+		return quote;
 	}
 
 	@Override

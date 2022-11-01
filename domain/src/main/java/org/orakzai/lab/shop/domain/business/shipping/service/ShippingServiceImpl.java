@@ -77,24 +77,24 @@ public class ShippingServiceImpl implements ShippingService {
 	@Autowired
 	private ModuleConfigurationService moduleConfigurationService;
 
-//	@Autowired
-//	private Packaging packaging;
-
 	@Autowired
 	private CountryService countryService;
 
 	@Autowired
 	private LanguageService languageService;
 
-//	@Autowired
-//	private Encryption encryption;
+	@Autowired
+	private Encryption encryption;
 
 	@Autowired
 	private MerchantLogService merchantLogService;
 
-//	@Autowired
-//	@Resource(name="shippingModules")
-//	private Map<String,ShippingQuoteModule> shippingModules;
+	@Autowired
+	@Resource(name="shippingModules")
+	private Map<String,ShippingQuoteModule> shippingModules;
+	
+	@Autowired
+	private Packaging packaging;
 
 	@Override
 	public ShippingConfiguration getShippingConfiguration(MerchantStore store) throws ServiceException {
@@ -319,25 +319,20 @@ public class ShippingServiceImpl implements ShippingService {
 
 	@Override
 	public Map<String,IntegrationConfiguration> getShippingModulesConfigured(MerchantStore store) throws ServiceException {
-//		try {
-//
-//
-//			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
-//			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(SHIPPING_MODULES, store);
-//			if(merchantConfiguration!=null) {
-//				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
-//					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
-//					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
-//
-//				}
-//			}
-//			return modules;
-//
-//
-//		} catch (Exception e) {
-//			throw new ServiceException(e);
-//		}
-		return null;
+		try {
+			Map<String,IntegrationConfiguration> modules = new HashMap<String,IntegrationConfiguration>();
+			MerchantConfiguration merchantConfiguration = merchantConfigurationService.getMerchantConfiguration(SHIPPING_MODULES, store);
+			if(merchantConfiguration!=null) {
+				if(!StringUtils.isBlank(merchantConfiguration.getValue())) {
+					String decrypted = encryption.decrypt(merchantConfiguration.getValue());
+					modules = ConfigurationModulesLoader.loadIntegrationConfigurations(decrypted);
+				}
+			}
+			return modules;
+
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
 
 	}
 
@@ -360,230 +355,221 @@ public class ShippingServiceImpl implements ShippingService {
 		ShippingQuote shippingQuote = new ShippingQuote();
 		ShippingQuoteModule shippingQuoteModule = null;
 
-//		try {
-//
-//			//get configuration
-//			ShippingConfiguration shippingConfiguration = getShippingConfiguration(store);
-//			ShippingType shippingType = ShippingType.INTERNATIONAL;
-//
-//			if(shippingConfiguration==null) {
-//				shippingConfiguration = new ShippingConfiguration();
-//			}
-//
-//			if(shippingConfiguration.getShippingType()!=null) {
-//					shippingType = shippingConfiguration.getShippingType();
-//			}
-//
-//			//look if customer country code excluded
-//			Country shipCountry = delivery.getCountry();
-//			if(shipCountry==null) {
-//				throw new ServiceException("Delivery country is null");
-//			}
-//
-//			//a ship to country is required
-//			Validate.notNull(shipCountry);
-//			Validate.notNull(store.getCountry());
-//
-//			if(shippingType.name().equals(ShippingType.NATIONAL.name())){
-//				//customer country must match store country
-//				if(!shipCountry.getIsoCode().equals(store.getCountry().getIsoCode())) {
-//					shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY + " " + shipCountry.getIsoCode());
-//					return shippingQuote;
-//				}
-//			} else if(shippingType.name().equals(ShippingType.INTERNATIONAL.name())){
-//
-//				//customer shipping country code must be in accepted list
-//				List<String> supportedCountries = this.getSupportedCountries(store);
-//				if(!supportedCountries.contains(shipCountry.getIsoCode())) {
-//					shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY + " " + shipCountry.getIsoCode());
-//					return shippingQuote;
-//				}
-//			}
-//
-//			//must have a shipping module configured
-//			Map<String, IntegrationConfiguration> modules = this.getShippingModulesConfigured(store);
-//			if(modules==null){
-//				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
-//				return shippingQuote;
-//			}
-//
-//
-//			/** uses this module name **/
-//			String moduleName = null;
-//			IntegrationConfiguration configuration = null;
-//			for(String module : modules.keySet()) {
-//				moduleName = module;
-//				configuration = modules.get(module);
-//				//use the first active module
-//				if(configuration.isActive()) {
-//					shippingQuoteModule = this.shippingModules.get(module);
-//					break;
-//				}
-//			}
-//
-//			if(shippingQuoteModule==null){
-//				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
-//				return shippingQuote;
-//			}
-//
-//			/** merchant module configs **/
-//			List<IntegrationModule> shippingMethods = this.getShippingMethods(store);
-//			IntegrationModule shippingModule = null;
-//			for(IntegrationModule mod : shippingMethods) {
-//				if(mod.getCode().equals(moduleName)){
-//					shippingModule = mod;
-//					break;
-//				}
-//			}
-//
-//			/** general module configs **/
-//			if(shippingModule==null) {
-//				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
-//				return shippingQuote;
-//			}
-//
-//			//calculate order total
-//			BigDecimal orderTotal = calculateOrderTotal(products,store);
-//			List<PackageDetails> packages = this.getPackagesDetails(products, store);
-//
-//			//free shipping ?
-//			if(shippingConfiguration.isFreeShippingEnabled()) {
-//				BigDecimal freeShippingAmount = shippingConfiguration.getOrderTotalFreeShipping();
-//				if(freeShippingAmount!=null) {
-//					if(orderTotal.doubleValue()>freeShippingAmount.doubleValue()) {
-//						if(shippingConfiguration.getFreeShippingType() == ShippingType.NATIONAL) {
-//							if(store.getCountry().getIsoCode().equals(shipCountry.getIsoCode())) {
-//								shippingQuote.setFreeShipping(true);
-//								shippingQuote.setFreeShippingAmount(freeShippingAmount);
-//								return shippingQuote;
-//							}
-//						} else {//international all
-//							shippingQuote.setFreeShipping(true);
-//							shippingQuote.setFreeShippingAmount(freeShippingAmount);
-//							return shippingQuote;
-//						}
-//
-//					}
-//				}
-//			}
-//
-//
-//			//handling fees
-//			BigDecimal handlingFees = shippingConfiguration.getHandlingFees();
-//			if(handlingFees!=null) {
-//				shippingQuote.setHandlingFees(handlingFees);
-//			}
-//
-//			//tax basis
-//			shippingQuote.setApplyTaxOnShipping(shippingConfiguration.isTaxOnShipping());
-//
-//
-//			Locale locale = languageService.toLocale(language);
-//
-//			//invoke module
-//			List<ShippingOption> shippingOptions = null;
-//
-//			try {
-//				shippingOptions = shippingQuoteModule.getShippingQuotes(packages, orderTotal, delivery, store, configuration, shippingModule, shippingConfiguration, locale);
-//			} catch(Exception e) {
-//				LOGGER.error("Error while calculating shipping", e);
-//				merchantLogService.save(
-//						new MerchantLog(store,
-//								"Can't process " + shippingModule.getModule()
-//								+ " -> "
-//								+ e.getMessage()));
-//				shippingQuote.setQuoteError(e.getMessage());
-//				shippingQuote.setShippingReturnCode(ShippingQuote.ERROR);
-//				return shippingQuote;
-//			}
-//
-//			if(shippingOptions==null) {
-//				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY);
-//			}
-//
-//
-//			shippingQuote.setShippingModuleCode(moduleName);
-//
-//			//filter shipping options
-//			ShippingOptionPriceType shippingOptionPriceType = shippingConfiguration.getShippingOptionPriceType();
-//			ShippingOption selectedOption = null;
-//
-//			if(shippingOptions!=null) {
-//
-//				for(ShippingOption option : shippingOptions) {
-//					if(selectedOption==null) {
-//						selectedOption = option;
-//					}
-//					//set price text
-//					String priceText = pricingService.getDisplayAmount(option.getOptionPrice(), store);
-//					option.setOptionPriceText(priceText);
-//
-//					if(StringUtils.isBlank(option.getOptionName())) {
-//
-//						String countryName = delivery.getCountry().getName();
-//						if(countryName == null) {
-//							Map<String,Country> deliveryCountries = countryService.getCountriesMap(language);
-//							Country dCountry = (Country)deliveryCountries.get(delivery.getCountry().getIsoCode());
-//							if(dCountry!=null) {
-//								countryName = dCountry.getName();
-//							} else {
-//								countryName = delivery.getCountry().getIsoCode();
-//							}
-//						}
-//							option.setOptionName(countryName);
-//					}
-//
-//					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.HIGHEST.name())) {
-//
-//						if (option.getOptionPrice()
-//								.longValue() > selectedOption
-//								.getOptionPrice()
-//								.longValue()) {
-//							selectedOption = option;
-//						}
-//					}
-//
-//
-//					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.LEAST.name())) {
-//
-//						if (option.getOptionPrice()
-//								.longValue() < selectedOption
-//								.getOptionPrice()
-//								.longValue()) {
-//							selectedOption = option;
-//						}
-//					}
-//
-//
-//					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.ALL.name())) {
-//
-//						if (option.getOptionPrice()
-//								.longValue() < selectedOption
-//								.getOptionPrice()
-//								.longValue()) {
-//							selectedOption = option;
-//						}
-//					}
-//
-//				}
-//
-//				shippingQuote.setSelectedShippingOption(selectedOption);
-//
-//				if(selectedOption!=null && !shippingOptionPriceType.name().equals(ShippingOptionPriceType.ALL.name())) {
-//					shippingOptions = new ArrayList<ShippingOption>();
-//					shippingOptions.add(selectedOption);
-//				}
-//
-//			}
-//
-//			shippingQuote.setShippingOptions(shippingOptions);
-//
-//		} catch (Exception e) {
-//			throw new ServiceException(e);
-//		}
-//
-//		return shippingQuote;
-		return null;
+		try {
+
+			//get configuration
+			ShippingConfiguration shippingConfiguration = getShippingConfiguration(store);
+			ShippingType shippingType = ShippingType.INTERNATIONAL;
+
+			if(shippingConfiguration==null) {
+				shippingConfiguration = new ShippingConfiguration();
+			}
+
+			if(shippingConfiguration.getShippingType()!=null) {
+					shippingType = shippingConfiguration.getShippingType();
+			}
+
+			//look if customer country code excluded
+			Country shipCountry = delivery.getCountry();
+			if(shipCountry==null) {
+				throw new ServiceException("Delivery country is null");
+			}
+
+			//a ship to country is required
+			Validate.notNull(shipCountry);
+			Validate.notNull(store.getCountry());
+
+			if(shippingType.name().equals(ShippingType.NATIONAL.name())){
+				//customer country must match store country
+				if(!shipCountry.getIsoCode().equals(store.getCountry().getIsoCode())) {
+					shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY + " " + shipCountry.getIsoCode());
+					return shippingQuote;
+				}
+			} else if(shippingType.name().equals(ShippingType.INTERNATIONAL.name())){
+
+				//customer shipping country code must be in accepted list
+				List<String> supportedCountries = this.getSupportedCountries(store);
+				if(!supportedCountries.contains(shipCountry.getIsoCode())) {
+					shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY + " " + shipCountry.getIsoCode());
+					return shippingQuote;
+				}
+			}
+
+			//must have a shipping module configured
+			Map<String, IntegrationConfiguration> modules = this.getShippingModulesConfigured(store);
+			if(modules==null){
+				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
+				return shippingQuote;
+			}
+
+
+			/** uses this module name **/
+			String moduleName = null;
+			IntegrationConfiguration configuration = null;
+			for(String module : modules.keySet()) {
+				moduleName = module;
+				configuration = modules.get(module);
+				//use the first active module
+				if(configuration.isActive()) {
+					shippingQuoteModule = this.shippingModules.get(module);
+					break;
+				}
+			}
+
+			if(shippingQuoteModule==null){
+				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
+				return shippingQuote;
+			}
+
+			/** merchant module configs **/
+			List<IntegrationModule> shippingMethods = this.getShippingMethods(store);
+			IntegrationModule shippingModule = null;
+			for(IntegrationModule mod : shippingMethods) {
+				if(mod.getCode().equals(moduleName)){
+					shippingModule = mod;
+					break;
+				}
+			}
+
+			/** general module configs **/
+			if(shippingModule==null) {
+				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_MODULE_CONFIGURED);
+				return shippingQuote;
+			}
+
+			//calculate order total
+			BigDecimal orderTotal = calculateOrderTotal(products,store);
+			List<PackageDetails> packages = this.getPackagesDetails(products, store);
+
+			//free shipping ?
+			if(shippingConfiguration.isFreeShippingEnabled()) {
+				BigDecimal freeShippingAmount = shippingConfiguration.getOrderTotalFreeShipping();
+				if(freeShippingAmount!=null) {
+					if(orderTotal.doubleValue()>freeShippingAmount.doubleValue()) {
+						if(shippingConfiguration.getFreeShippingType() == ShippingType.NATIONAL) {
+							if(store.getCountry().getIsoCode().equals(shipCountry.getIsoCode())) {
+								shippingQuote.setFreeShipping(true);
+								shippingQuote.setFreeShippingAmount(freeShippingAmount);
+								return shippingQuote;
+							}
+						} else {//international all
+							shippingQuote.setFreeShipping(true);
+							shippingQuote.setFreeShippingAmount(freeShippingAmount);
+							return shippingQuote;
+						}
+
+					}
+				}
+			}
+
+
+			//handling fees
+			BigDecimal handlingFees = shippingConfiguration.getHandlingFees();
+			if(handlingFees!=null) {
+				shippingQuote.setHandlingFees(handlingFees);
+			}
+
+			//tax basis
+			shippingQuote.setApplyTaxOnShipping(shippingConfiguration.isTaxOnShipping());
+
+
+			Locale locale = languageService.toLocale(language);
+
+			//invoke module
+			List<ShippingOption> shippingOptions = null;
+
+			try {
+				shippingOptions = shippingQuoteModule.getShippingQuotes(packages, orderTotal, delivery, store, configuration, shippingModule, shippingConfiguration, locale);
+			} catch(Exception e) {
+				log.error("Error while calculating shipping", e);
+				merchantLogService.save(
+						new MerchantLog(store,
+								"Can't process " + shippingModule.getModule()
+								+ " -> "
+								+ e.getMessage()));
+				shippingQuote.setQuoteError(e.getMessage());
+				shippingQuote.setShippingReturnCode(ShippingQuote.ERROR);
+				return shippingQuote;
+			}
+
+			if(shippingOptions==null) {
+				shippingQuote.setShippingReturnCode(ShippingQuote.NO_SHIPPING_TO_SELECTED_COUNTRY);
+			}
+
+
+			shippingQuote.setShippingModuleCode(moduleName);
+
+			//filter shipping options
+			ShippingOptionPriceType shippingOptionPriceType = shippingConfiguration.getShippingOptionPriceType();
+			ShippingOption selectedOption = null;
+
+			if(shippingOptions!=null) {
+
+				for(ShippingOption option : shippingOptions) {
+					if(selectedOption==null) {
+						selectedOption = option;
+					}
+					//set price text
+					String priceText = pricingService.getDisplayAmount(option.getOptionPrice(), store);
+					option.setOptionPriceText(priceText);
+
+					if(StringUtils.isBlank(option.getOptionName())) {
+
+						String countryName = delivery.getCountry().getName();
+						if(countryName == null) {
+							Map<String,Country> deliveryCountries = countryService.getCountriesMap(language);
+							Country dCountry = (Country)deliveryCountries.get(delivery.getCountry().getIsoCode());
+							if(dCountry!=null) {
+								countryName = dCountry.getName();
+							} else {
+								countryName = delivery.getCountry().getIsoCode();
+							}
+						}
+							option.setOptionName(countryName);
+					}
+
+					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.HIGHEST.name())) {
+
+						if (option.getOptionPrice()
+								.longValue() > selectedOption
+								.getOptionPrice()
+								.longValue()) {
+							selectedOption = option;
+						}
+					}
+
+
+					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.LEAST.name())) {
+
+						if (option.getOptionPrice()
+								.longValue() < selectedOption
+								.getOptionPrice()
+								.longValue()) {
+							selectedOption = option;
+						}
+					}
+
+					if(shippingOptionPriceType.name().equals(ShippingOptionPriceType.ALL.name())) {
+						if (option.getOptionPrice()
+								.longValue() < selectedOption
+								.getOptionPrice()
+								.longValue()) {
+							selectedOption = option;
+						}
+					}
+				}
+				shippingQuote.setSelectedShippingOption(selectedOption);
+				if(selectedOption!=null && !shippingOptionPriceType.name().equals(ShippingOptionPriceType.ALL.name())) {
+					shippingOptions = new ArrayList<ShippingOption>();
+					shippingOptions.add(selectedOption);
+				}
+			}
+			shippingQuote.setShippingOptions(shippingOptions);
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
+
+		return shippingQuote;
 
 	}
 
@@ -713,21 +699,20 @@ public class ShippingServiceImpl implements ShippingService {
 
 		List<PackageDetails> packages = null;
 
-//		ShippingConfiguration shippingConfiguration = this.getShippingConfiguration(store);
-//		//determine if the system has to use BOX or ITEM
-//		ShippingPackageType shippingPackageType = ShippingPackageType.ITEM;
-//		if(shippingConfiguration!=null) {
-//			shippingPackageType = shippingConfiguration.getShippingPackageType();
-//		}
-//
-//		if(shippingPackageType.name().equals(ShippingPackageType.BOX.name())){
-//			packages = packaging.getBoxPackagesDetails(products, store);
-//		} else {
-//			packages = packaging.getItemPackagesDetails(products, store);
-//		}
-//
-//		return packages;
-		return null;
+		ShippingConfiguration shippingConfiguration = this.getShippingConfiguration(store);
+		//determine if the system has to use BOX or ITEM
+		ShippingPackageType shippingPackageType = ShippingPackageType.ITEM;
+		if(shippingConfiguration!=null) {
+			shippingPackageType = shippingConfiguration.getShippingPackageType();
+		}
+
+		if(shippingPackageType.name().equals(ShippingPackageType.BOX.name())){
+			packages = packaging.getBoxPackagesDetails(products, store);
+		} else {
+			packages = packaging.getItemPackagesDetails(products, store);
+		}
+
+		return packages;
 
 	}
 

@@ -1,6 +1,7 @@
 package org.orakzai.lab.shop.domain.business.payments.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.orakzai.lab.shop.domain.business.order.service.OrderService;
 import org.orakzai.lab.shop.domain.business.payments.model.CreditCardType;
 import org.orakzai.lab.shop.domain.business.payments.model.Payment;
 import org.orakzai.lab.shop.domain.business.payments.model.PaymentMethod;
+import org.orakzai.lab.shop.domain.business.payments.model.PaymentType;
 import org.orakzai.lab.shop.domain.business.payments.model.Transaction;
 import org.orakzai.lab.shop.domain.business.shoppingcart.model.ShoppingCartItem;
 import org.orakzai.lab.shop.domain.business.system.model.IntegrationConfiguration;
@@ -79,41 +81,40 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public List<PaymentMethod> getAcceptedPaymentMethods(MerchantStore store) throws ServiceException {
 
-//		Map<String,IntegrationConfiguration> modules =  this.getPaymentModulesConfigured(store);
-//
-//		List<PaymentMethod> returnModules = new ArrayList<PaymentMethod>();
-//
-//		for(String module : modules.keySet()) {
-//			IntegrationConfiguration config = modules.get(module);
-//			if(config.isActive()) {
-//
-//				IntegrationModule md = this.getPaymentMethodByCode(store, config.getModuleCode());
-//				if(md==null) {
-//					continue;
-//				}
-//				PaymentMethod paymentMethod = new PaymentMethod();
-//
-//				paymentMethod.setDefaultSelected(config.isDefaultSelected());
-//				paymentMethod.setPaymentMethodCode(config.getModuleCode());
-//				paymentMethod.setModule(md);
-//				paymentMethod.setInformations(config);
-//				PaymentType type = PaymentType.COD;
-//				if(md.getType().equalsIgnoreCase(PaymentType.CREDITCARD.name())) {
-//					type = PaymentType.CREDITCARD;
-//				} else 	if(md.getType().equalsIgnoreCase(PaymentType.FREE.name())) {
-//					type = PaymentType.FREE;
-//				} else 	if(md.getType().equalsIgnoreCase(PaymentType.MONEYORDER.name())) {
-//					type = PaymentType.MONEYORDER;
-//				} else 	if(md.getType().equalsIgnoreCase(PaymentType.PAYPAL.name())) {
-//					type = PaymentType.PAYPAL;
-//				}
-//				paymentMethod.setPaymentType(type);
-//				returnModules.add(paymentMethod);
-//			}
-//		}
-//
-//		return returnModules;
-		return null;
+		Map<String,IntegrationConfiguration> modules =  this.getPaymentModulesConfigured(store);
+
+		List<PaymentMethod> returnModules = new ArrayList<>();
+
+		for(String module : modules.keySet()) {
+			IntegrationConfiguration config = modules.get(module);
+			if(config.isActive()) {
+
+				IntegrationModule md = this.getPaymentMethodByCode(store, config.getModuleCode());
+				if(md==null) {
+					continue;
+				}
+				PaymentMethod paymentMethod = new PaymentMethod();
+
+				paymentMethod.setDefaultSelected(config.isDefaultSelected());
+				paymentMethod.setPaymentMethodCode(config.getModuleCode());
+				paymentMethod.setModule(md);
+				paymentMethod.setInformations(config);
+				PaymentType type = PaymentType.COD;
+				if(md.getType().equalsIgnoreCase(PaymentType.CREDITCARD.name())) {
+					type = PaymentType.CREDITCARD;
+				} else 	if(md.getType().equalsIgnoreCase(PaymentType.FREE.name())) {
+					type = PaymentType.FREE;
+				} else 	if(md.getType().equalsIgnoreCase(PaymentType.MONEYORDER.name())) {
+					type = PaymentType.MONEYORDER;
+				} else 	if(md.getType().equalsIgnoreCase(PaymentType.PAYPAL.name())) {
+					type = PaymentType.PAYPAL;
+				}
+				paymentMethod.setPaymentType(type);
+				returnModules.add(paymentMethod);
+			}
+		}
+
+		return returnModules;
 
 
 	}

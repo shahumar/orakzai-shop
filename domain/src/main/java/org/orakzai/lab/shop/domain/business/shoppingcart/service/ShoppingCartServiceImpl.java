@@ -170,17 +170,18 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 	public ShoppingCart getByCode(final String code, final MerchantStore store) throws ServiceException {
 
 		try {
-			ShoppingCart shoppingCart = shoppingCartDao.findByShoppingCartCodeAndMerchantStore(code, store).get();
-			if(shoppingCart==null) {
+			var shoppingCart = shoppingCartDao.findByShoppingCartCodeAndMerchantStore(code, store);
+			if (!shoppingCart.isPresent()) {
 				return null;
 			}
-			populateShoppingCart(shoppingCart);
+			var cart = shoppingCart.get();
+			populateShoppingCart(cart);
 
-			if(shoppingCart.isObsolete()) {
-				delete(shoppingCart);
+			if(cart.isObsolete()) {
+				delete(cart);
 				return null;
 			} else {
-				return shoppingCart;
+				return cart;
 			}
 
 		}catch(javax.persistence.NoResultException nre) {
