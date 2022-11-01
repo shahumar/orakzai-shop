@@ -276,7 +276,7 @@ public class ShoppingOrderController extends AbstractController {
 	}
 	
 	@GetMapping("/commitOrder.html")
-	public String commitOrder(@CookieValue("cart") String cookie, @Valid @ModelAttribute("order") ShopOrder order, BindingResult bindingResult, Model model, HttpServletRequest req, HttpServletResponse resp, Locale locale) throws Exception {
+	public String commitOrder(Authentication auth, @CookieValue("cart") String cookie, @Valid @ModelAttribute("order") ShopOrder order, BindingResult bindingResult, Model model, HttpServletRequest req, HttpServletResponse resp, Locale locale) throws Exception {
 		var store = (MerchantStore) req.getAttribute(Constants.MERCHANT_STORE);
 		Language language = (Language) req.getAttribute(Constants.LANGUAGE);
 		
@@ -388,7 +388,7 @@ public class ShoppingOrderController extends AbstractController {
 				return ControllerConstants.Templates.Checkout.checkout;
 			}
 			@SuppressWarnings("unused")
-			Order modelOrder = this.commitOrder(order, req, locale);
+			Order modelOrder = this.commitOrder(auth, order, req, locale);
 			
 			
 		} catch (ServiceException e) {
@@ -420,16 +420,14 @@ public class ShoppingOrderController extends AbstractController {
 		return "redirect:/shop/order/confirmation.html";
 	}
 
-	private Order commitOrder(@Valid ShopOrder order, HttpServletRequest req, Locale locale) throws Exception, ServiceException {
+	private Order commitOrder(Authentication auth, @Valid ShopOrder order, HttpServletRequest req, Locale locale) throws Exception, ServiceException {
 		var store = (MerchantStore) req.getAttribute(Constants.MERCHANT_STORE);
 		var language = (Language) req.getAttribute(Constants.LANGUAGE);
 		
 		String userName = null;
 		String password = null;
 		
-		PersistableCustomer customer = order.getCustomer();
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		PersistableCustomer customer = order.getCustomer();		
 		
 		Customer authCustomer = null;
 		
