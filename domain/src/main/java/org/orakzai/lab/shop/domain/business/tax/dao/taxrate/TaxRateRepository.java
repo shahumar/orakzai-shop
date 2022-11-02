@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 
-@Repository("taxRateDao")
+@Repository("taxRateRepository")
 public interface TaxRateRepository  extends SalesManagerEntityDao<Long, TaxRate> {
 
 	List<TaxRate> findAllByMerchantStore(MerchantStore store);
@@ -23,23 +23,22 @@ public interface TaxRateRepository  extends SalesManagerEntityDao<Long, TaxRate>
 
 	@Query("select tr from TaxRate tr left join fetch tr.merchantStore s left join fetch "
 			+ "tr.descriptions d left join fetch tr.country c left join fetch tr.zone z left join fetch tr.parent p "
-			+ "where tr:merchantStore=:store and (tr.zone=:zone or tr is Null) and tr.country=:country and d.language=:language order by tr.taxPriority asc")
-	List<TaxRate> findAllByCountryAndZoneAndTaxClass(Country country, Zone zone,
-			TaxClass taxClass, MerchantStore store, Language language);
+			+ "where tr.merchantStore=:store and (tr.zone=:zone or tr.id is Null) and tr.country=:country and d.language=:language order by tr.taxPriority asc")
+	List<TaxRate> findAllByCountryAndZone(Country country, Zone zone,
+			MerchantStore store, Language language);
 
 	@Query("select tr from TaxRate tr left join fetch tr.merchantStore s left join fetch "
 			+ "tr.descriptions d left join fetch tr.country c left join fetch tr.zone z left join fetch tr.parent p "
 			+ "where tr.merchantStore=:store and tr.stateProvince=:stateProvince and tr.country=:country "
-			+ "and tr.descriptions.language =: language order by tr.taxPriority asc")
-	List<TaxRate> findAllByCountryStateProvinceAndTaxClass(Country country,
-			String stateProvince, TaxClass taxClass, MerchantStore store,
-			Language language);
+			+ "and d.language =:language order by tr.taxPriority asc")
+	List<TaxRate> findAllByCountryStateProvince(Country country,
+			String stateProvince, MerchantStore store, Language language);
 
 	Optional<TaxRate> findByCodeAndMerchantStore(String code, MerchantStore store);
 
 	@Query("select tr from TaxRate tr left join fetch tr.merchantStore s left join fetch "
 			+ "tr.descriptions d left join fetch tr.country c left join fetch tr.zone z left join fetch tr.parent p "
-			+ "where tr.merchantStore=:store  and tr.descriptions.language=:language order by tr.taxPriority asc")
+			+ "where tr.merchantStore=:store  and d.language=:language order by tr.taxPriority asc")
 	List<TaxRate> listByStore(MerchantStore store, Language language);
 
 }

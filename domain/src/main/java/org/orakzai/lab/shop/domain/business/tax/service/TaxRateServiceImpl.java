@@ -49,12 +49,12 @@ public class TaxRateServiceImpl extends SalesManagerEntityServiceImpl<Long, TaxR
 
 	@Override
 	public List<TaxRate> listByCountryZoneAndTaxClass(Country country, Zone zone, TaxClass taxClass, MerchantStore store, Language language) throws ServiceException {
-		return taxRateRepository.findAllByCountryAndZoneAndTaxClass(country, zone, taxClass, store, language);
+		return taxRateRepository.findAllByCountryAndZone(country, zone, store, language);
 	}
 
 	@Override
 	public List<TaxRate> listByCountryStateProvinceAndTaxClass(Country country, String stateProvince, TaxClass taxClass, MerchantStore store, Language language) throws ServiceException {
-		return taxRateRepository.findAllByCountryStateProvinceAndTaxClass(country, stateProvince, taxClass, store, language);
+		return taxRateRepository.findAllByCountryStateProvince(country, stateProvince, store, language);
 	}
 
 	@Override
