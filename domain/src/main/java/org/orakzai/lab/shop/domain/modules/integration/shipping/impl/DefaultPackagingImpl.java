@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 import org.orakzai.lab.shop.domain.business.catalog.product.model.Product;
 import org.orakzai.lab.shop.domain.business.catalog.product.model.attribute.ProductAttribute;
 import org.orakzai.lab.shop.domain.business.generic.exception.ServiceException;
@@ -19,9 +20,11 @@ import org.orakzai.lab.shop.domain.business.system.model.MerchantLog;
 import org.orakzai.lab.shop.domain.business.system.service.MerchantLogService;
 import org.orakzai.lab.shop.domain.modules.integration.shipping.model.Packaging;
 
+@Component("boxPackaging")
 public class DefaultPackagingImpl implements Packaging {
 
-
+	
+	@Lazy
 	@Autowired
 	private ShippingService shippingService;
 

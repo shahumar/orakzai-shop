@@ -22,7 +22,7 @@ import org.orakzai.lab.shop.domain.modules.order.InvoiceModule;
 
 @Slf4j
 @Service("orderProductDownloadService")
-public abstract class OrderProductDownloadServiceImpl  extends SalesManagerEntityServiceImpl<Long, OrderProductDownload> implements OrderProductDownloadService {
+public class OrderProductDownloadServiceImpl  extends SalesManagerEntityServiceImpl<Long, OrderProductDownload> implements OrderProductDownloadService {
 
 
 //    @Autowired

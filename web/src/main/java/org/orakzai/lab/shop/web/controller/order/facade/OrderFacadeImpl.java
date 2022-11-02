@@ -1,6 +1,5 @@
 package org.orakzai.lab.shop.web.controller.order.facade;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -380,8 +378,23 @@ public class OrderFacadeImpl implements OrderFacade {
 	@Override
 	public ShippingQuote getShippingQuote(Customer customer, ShoppingCart cart, PersistableOrder order,
 			MerchantStore store, Language language) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		var shippingProducts = shoppingCartService.createShippingProduct(cart);
+		if (CollectionUtils.isEmpty(shippingProducts))
+			return null;
+		Delivery delivery = new Delivery();
+		if (order.isShipToBillingAdress()) {
+			Billing billing = customer.getBilling();
+			delivery.setCompany(billing.getCompany());
+			delivery.setPostalCode(billing.getPostalCode());
+			delivery.setState(billing.getState());
+			delivery.setCountry(billing.getCountry());
+			delivery.setZone(billing.getZone());
+		} else {
+			delivery = customer.getDelivery();
+		}
+		
+		ShippingQuote quote = shippingService.getShippingQuote(store, delivery, shippingProducts, language);
+		return quote;
 	}
 
 	@Override

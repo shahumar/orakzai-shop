@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository("digitalProductRepository")
 public interface DigitalProductRepository extends SalesManagerEntityDao<Long, DigitalProduct> {
 
-	@Query("Select dp from DigitalProduct inner join fetch dp.product p inner join fetch p.merchantStore "
+	@Query("Select dp from DigitalProduct dp inner join fetch dp.product p inner join fetch p.merchantStore "
 			+ "where p.merchantStore=:store and dp.product=:product")
 	Optional<DigitalProduct> findByStoreAndProduct(MerchantStore store, Product product);
 

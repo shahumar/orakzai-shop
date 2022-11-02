@@ -26,9 +26,11 @@ import org.orakzai.lab.shop.domain.business.shoppingcart.model.ShoppingCartItem;
 import org.orakzai.lab.shop.domain.utils.AbstractDataPopulator;
 import org.orakzai.lab.shop.web.constants.ApplicationConstants;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class OrderProductPopulator extends AbstractDataPopulator<ShoppingCartItem, OrderProduct>{
 	
 	private ProductService productService;

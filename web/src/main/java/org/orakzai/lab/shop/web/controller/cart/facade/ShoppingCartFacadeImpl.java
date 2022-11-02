@@ -258,7 +258,9 @@ public class ShoppingCartFacadeImpl implements ShoppingCartFacade {
 
 	@Override
 	public void deleteShoppingCart(String code, MerchantStore store) throws Exception {
-		// TODO Auto-generated method stub
+		ShoppingCart cart = shoppingCartService.getByCode(code, store);
+		if (cart != null) 
+			shoppingCartService.delete(cart);
 
 	}
 

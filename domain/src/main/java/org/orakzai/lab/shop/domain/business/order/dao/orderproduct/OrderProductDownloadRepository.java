@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository("orderProductDownloadRepository")
 public interface OrderProductDownloadRepository extends SalesManagerEntityDao<Long, OrderProductDownload> {
 
-	@Query("select pd from OrderProductDownload pd left join fetch pd.orderProduct op "
-			+ "left join fetch op.order o left join fetch op.merchant where pd.id=:orderId")
+	@Query("select distinct pd from OrderProductDownload pd left join fetch pd.orderProduct op "
+			+ "left join fetch op.order o left join fetch o.merchant where o.id=:orderId")
 	List<OrderProductDownload> getByOrderId(Long orderId);
 
 }

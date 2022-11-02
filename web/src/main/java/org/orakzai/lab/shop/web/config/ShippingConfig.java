@@ -44,8 +44,8 @@ public class ShippingConfig {
 //	}
 	
 	
-	@Bean
-	public Map<String, ShippingQuoteModule> paymentModules() {
+	@Bean("shippingModules")
+	public Map<String, ShippingQuoteModule> shippingModules() {
 		var modules = new HashMap<String, ShippingQuoteModule>();
 		modules.put("usps", usps());
 		modules.put("ups", ups());
