@@ -781,7 +781,7 @@
 													<div class="controls" th:with="msgShippingFirstName='Shipping first name should not be empty'">
 														<input id="customer.delivery.name"
 															class="input-xxlarge required"
-															field="*{customer.delivery.firstName}"
+															th:field="*{order.customer.delivery.firstName}"
 															title="${msgShippingFirstName}" />
 													</div>
 												</div>
@@ -794,8 +794,8 @@
 													<label>Shipping last name</label>
 													<div class="controls" th:with="msgShippingLastName='Shipping last name should not be empty'">
 														<input id="customer.delivery.name"
-															cssClass="input-xxlarge required"
-															field="*{customer.delivery.lastName}"
+															class="input-xxlarge required"
+															th:field="*{order.customer.delivery.lastName}"
 															title="${msgShippingLastName}" />
 													</div>
 												</div>
@@ -808,7 +808,7 @@
 												<label>Shipping company</label>
 												<div class="controls">
 													<input id="customer.delivery.company"
-														class="input-large" th:field="*{customer.delivery.company}" />
+														class="input-large" th:field="*{order.customer.delivery.company}" />
 												</div>
 											</div>
 										</div>
@@ -820,7 +820,7 @@
 												<div class="controls" th:with="msgShippingAddress='Shipping street address should not be empty'">
 													<input id="customer.delivery.address"
 														class="input-xxlarge required"
-														field="*{customer.delivery.address}"
+														th:field="*{order.customer.delivery.address}"
 														title="${msgShippingAddress}" />
 												</div>
 											</div>
@@ -834,7 +834,7 @@
 													<div class="controls" th:with="msgShippingCity='Shipping city should not be empty'">
 														<input id="customer.delivery.city"
 															class="input-large required"
-															field="*{customer.delivery.city}" title="${msgShippingCity}" />
+															th:field="*{order.customer.delivery.city}" title="${msgShippingCity}" />
 													</div>
 												</div>
 											</div>
@@ -844,7 +844,7 @@
 													<div class="controls" th:with="msgShippingPostal='Shipping postal code should not be empty'">
 														<input id="deliveryPostalCode"
 															class="input-large required delivery-postalCode"
-															field="*{customer.delivery.postalCode}"
+															th:field="*{order.customer.delivery.postalCode}"
 															title="${msgShippingPostal}" />
 													</div>
 												</div>
@@ -857,12 +857,12 @@
 												<label>Shipping state / province</label>
 												<div class="controls" th:with="msgShippingState='Shipping State / Province is required'">
 													<select cssClass="zone-list" id="deliveryStateList"
-														th:field="*{customer.delivery.zone}" />
+														th:field="*{order.customer.delivery.zone}" />
 													
 													<input class="input-large required"
 														id="deliveryStateProvince" maxlength="100"
 														name="shippingStateProvince"
-														field="*{customer.delivery.stateProvince}"
+														th:field="*{order.customer.delivery.stateProvince}"
 														title="${msgShippingState}" />
 												</div>
 											</div>
@@ -874,7 +874,7 @@
 												<label>Shipping country</label>
 												<div class="controls">
 													<select cssClass="shipping-country-list"
-														field="*{customer.delivery.country}">
+														th:field="*{order.customer.delivery.country}">
 														<option th:each="country : ${countries}" th:value="${country.isoCode}" th:text="${country.name}"/>
 													</select>
 												</div>

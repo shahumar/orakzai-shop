@@ -274,7 +274,7 @@ public class ShoppingOrderController extends AbstractController {
 		
 	}
 	
-	@GetMapping("/commitOrder.html")
+	@RequestMapping("/commitOrder.html")
 	public String commitOrder(Authentication auth, @CookieValue("cart") String cookie, @Valid @ModelAttribute("order") ShopOrder order, BindingResult bindingResult, Model model, HttpServletRequest req, HttpServletResponse resp, Locale locale) throws Exception {
 		var store = (MerchantStore) req.getAttribute(Constants.MERCHANT_STORE);
 		Language language = (Language) req.getAttribute(Constants.LANGUAGE);
