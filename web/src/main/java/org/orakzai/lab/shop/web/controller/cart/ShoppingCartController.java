@@ -78,7 +78,7 @@ public class ShoppingCartController extends AbstractController {
 		log.info("Starting to calculate shopping cart...");
 		
 		PageInformation pageInformation = new PageInformation();
-		pageInformation.setPageTitle(messages.getMessage("label.cart.placeholder", null, locale));
+		pageInformation.setPageTitle(messages.getMessage("label.cart.placeorder", null, locale));
 		req.setAttribute(Constants.REQUEST_PAGE_INFORMATION, pageInformation);
 		MerchantStore store = (MerchantStore) req.getAttribute(Constants.MERCHANT_STORE);
 		Customer customer = getSessionAttribute(Constants.CUSTOMER, req);

@@ -597,7 +597,7 @@
 				th:if="${!#authorization.expression('hasRole(''AUTH_CUSTOMER'')')}">
 				Logon or signup to simplify the online purchase process!</p>
 			<form id="checkoutForm" method="POST" enctype="multipart/form-data"
-				object="${order}" th:action="@{/shop/order/commitOrder.html}">
+				th:object="${order}" th:action="@{/shop/order/commitOrder.html}">
 				<div class="row-fluid" id="checkout">
 					<div class="span12">
 						<!-- If error messages -->
@@ -624,8 +624,8 @@
 												<div class="controls" th:with="msgFirstName='First name is required'">
 													<input id="customer.firstName"
 														class="input-large required"
-														field="*{customer.billing.firstName}" th:title="${msgFirstName}" />
-                                 					<span errorClass="error" errors="*{customer.billing.firstName}" if="${#fields.hasErrors('customer.billing.firstName')}" />
+														th:field="*{customer.billing.firstName}" th:title="${msgFirstName}" />
+                                 					<span class="error" th:errors="*{customer.billing.firstName}" th:if="${#fields.hasErrors('customer.billing.firstName')}" />
 												</div>
 											</div>
 										</div>
@@ -636,8 +636,8 @@
 													
 													<input id="customer.lastName"
 														class="input-large required" maxlength="32"
-														field="*{customer.billing.lastName}" th:title="${msgLastName}" />
-													<span errorClass="error" errors="*{customer.billing.lastName}" if="${#fields.hasErrors('customer.billing.lastName')}" />
+														th:field="*{customer.billing.lastName}" th:title="${msgLastName}" />
+													<span class="error" th:errors="*{customer.billing.lastName}" th:if="${#fields.hasErrors('customer.billing.lastName')}" />
 												</div>
 											</div>
 										</div>
@@ -653,8 +653,8 @@
 													
 													<input id="customer.emailAddress"
 														class="input-large required email"
-														field="*{customer.emailAddress}" title="${msgEmail}" />
-													<span errorClass="error" errors="*{customer.emailAddress}" if="${#fields.hasErrors('customer.emailAddress')}" />
+														th:field="*{customer.emailAddress}" title="${msgEmail}" />
+													<span class="error" th:errors="*{customer.emailAddress}" th:if="${#fields.hasErrors('customer.emailAddress')}" />
 												</div>
 											</div>
 										</div>
@@ -663,8 +663,8 @@
 												<label>Billing company</label>
 												<div class="controls">
 													<input id="customer.billing.company"
-														class="input-large" field="*{customer.billing.company}" />
-													<span errorClass="error" errors="*{customer.billing.company}" if="${#fields.hasErrors('customer.billing.company')}" />
+														class="input-large" th:field="*{customer.billing.company}" />
+													<span class="error" th:errors="*{customer.billing.company}" th:if="${#fields.hasErrors('customer.billing.company')}" />
 													
 												</div>
 											</div>
@@ -678,8 +678,8 @@
 											<div class="controls" th:with="msgAddress='Address is required'">
 												<input id="customer.billing.address"
 													class="input-xxlarge required"
-													field="*{customer.billing.address}" title="${msgAddress}" />
-												<span errorClass="error" errors="*{customer.billing.address}" if="${#fields.hasErrors('customer.billing.address')}" />
+													th:field="*{customer.billing.address}" th:title="${msgAddress}" />
+												<span class="error" th:errors="*{customer.billing.address}" th:if="${#fields.hasErrors('customer.billing.address')}" />
 												
 											</div>
 										</div>
@@ -693,8 +693,8 @@
 												<div class="controls" th:with="msgCity='City is required'">
 													<input id="customer.billing.city"
 														class="input-large required"
-														field="*{customer.billing.city}" title="${msgCity}" />
-													<span errorClass="error" errors="*{customer.billing.city}" if="${#fields.hasErrors('customer.billing.city')}" />
+														th:field="*{customer.billing.city}" th:title="${msgCity}" />
+													<span class="error" th:errors="*{customer.billing.city}" th:if="${#fields.hasErrors('customer.billing.city')}" />
 												</div>
 											</div>
 										</div>
@@ -703,10 +703,10 @@
 												<label>Postal code</label>
 												<div class="controls" th:with="msgPostalCode='Postal code is required'">
 													<input id="billingPostalCode"
-														cssClass="input-large required billing-postalCode"
-														field="*{customer.billing.postalCode}"
-														title="${msgPostalCode}" />
-													<span errorClass="error" errors="*{customer.billing.postalCode}" if="${#fields.hasErrors('customer.billing.postalCode')}" />
+														class="input-large required billing-postalCode"
+														th:field="*{customer.billing.postalCode}"
+														th:title="${msgPostalCode}" />
+													<span class="error" th:errors="*{customer.billing.postalCode}" th:if="${#fields.hasErrors('customer.billing.postalCode')}" />
 													
 												</div>
 											</div>
@@ -718,15 +718,15 @@
 										<div class="control-group">
 											<label>State / Province</label>
 											<div class="controls" th:with="msgStateProvince='State / Province is required'">
-												<select cssClass="zone-list" id="billingStateList"
-													field="*{customer.billing.zone}" />
+												<select class="zone-list" id="billingStateList"
+													th:field="*{customer.billing.zone}" />
 												
 												<input class="input-large required"
 													id="billingStateProvince" maxlength="100"
-													name="billingStateProvince"
-													field="*{customer.billing.stateProvince}"
-													title="${msgStateProvince}" />
-												<span errorClass="error" errors="*{customer.billing.stateProvince}" if="${#fields.hasErrors('customer.billing.stateProvince')}" />
+													
+													th:field="*{customer.billing.stateProvince}"
+													th:title="${msgStateProvince}" />
+												<span class="error" th:errors="*{customer.billing.stateProvince}" th:if="${#fields.hasErrors('customer.billing.stateProvince')}" />
 												
 											</div>
 										</div>
@@ -737,9 +737,9 @@
 										<div class="control-group">
 											<label>Country</label>
 											<div class="controls">
-												<select cssClass="billing-country-list"
-													field="*{customer.billing.country}">
-													<option th:each="country : ${countries}" value="${country.isoCode}" th:text="${country.name}">
+												<select class="billing-country-list"
+													th:field="*{customer.billing.country}">
+													<option th:each="country : ${countries}" th:value="${country.isoCode}" th:text="${country.name}">
 												</select>
 											</div>
 										</div>
@@ -749,8 +749,8 @@
 											<div class="controls" th:with="msgPhone='Phone number is required'">
 												<input id="customer.billing.phone"
 													class="input-large required billing-phone"
-													field="*{customer.billing.phone}" title="${msgPhone}" />
-												<span errorClass="error" errors="*{customer.billing.phone}" if="${#fields.hasErrors('customer.billing.phone')}" />
+													th:field="*{customer.billing.phone}" th:title="${msgPhone}" />
+												<span class="error" th:errors="*{customer.billing.phone}" th:if="${#fields.hasErrors('customer.billing.phone')}" />
 											</div>
 										</div>
 
@@ -781,8 +781,8 @@
 													<div class="controls" th:with="msgShippingFirstName='Shipping first name should not be empty'">
 														<input id="customer.delivery.name"
 															class="input-xxlarge required"
-															th:field="*{order.customer.delivery.firstName}"
-															title="${msgShippingFirstName}" />
+															th:field="*{customer.delivery.firstName}"
+															th:title="${msgShippingFirstName}" />
 													</div>
 												</div>
 											</div>
@@ -795,8 +795,8 @@
 													<div class="controls" th:with="msgShippingLastName='Shipping last name should not be empty'">
 														<input id="customer.delivery.name"
 															class="input-xxlarge required"
-															th:field="*{order.customer.delivery.lastName}"
-															title="${msgShippingLastName}" />
+															th:field="*{customer.delivery.lastName}"
+															th:title="${msgShippingLastName}" />
 													</div>
 												</div>
 											</div>
@@ -808,7 +808,7 @@
 												<label>Shipping company</label>
 												<div class="controls">
 													<input id="customer.delivery.company"
-														class="input-large" th:field="*{order.customer.delivery.company}" />
+														class="input-large" th:field="*{customer.delivery.company}" />
 												</div>
 											</div>
 										</div>
@@ -820,8 +820,8 @@
 												<div class="controls" th:with="msgShippingAddress='Shipping street address should not be empty'">
 													<input id="customer.delivery.address"
 														class="input-xxlarge required"
-														th:field="*{order.customer.delivery.address}"
-														title="${msgShippingAddress}" />
+														th:field="*{customer.delivery.address}"
+														th:title="${msgShippingAddress}" />
 												</div>
 											</div>
 										</div>
@@ -834,7 +834,7 @@
 													<div class="controls" th:with="msgShippingCity='Shipping city should not be empty'">
 														<input id="customer.delivery.city"
 															class="input-large required"
-															th:field="*{order.customer.delivery.city}" title="${msgShippingCity}" />
+															th:field="*{customer.delivery.city}" th:title="${msgShippingCity}" />
 													</div>
 												</div>
 											</div>
@@ -844,8 +844,8 @@
 													<div class="controls" th:with="msgShippingPostal='Shipping postal code should not be empty'">
 														<input id="deliveryPostalCode"
 															class="input-large required delivery-postalCode"
-															th:field="*{order.customer.delivery.postalCode}"
-															title="${msgShippingPostal}" />
+															th:field="*{customer.delivery.postalCode}"
+															th:title="${msgShippingPostal}" />
 													</div>
 												</div>
 											</div>
@@ -856,14 +856,14 @@
 											<div class="control-group">
 												<label>Shipping state / province</label>
 												<div class="controls" th:with="msgShippingState='Shipping State / Province is required'">
-													<select cssClass="zone-list" id="deliveryStateList"
-														th:field="*{order.customer.delivery.zone}" />
+													<select class="zone-list" id="deliveryStateList"
+														th:field="*{customer.delivery.zone}" />
 													
 													<input class="input-large required"
 														id="deliveryStateProvince" maxlength="100"
 														name="shippingStateProvince"
-														th:field="*{order.customer.delivery.stateProvince}"
-														title="${msgShippingState}" />
+														th:field="*{customer.delivery.stateProvince}"
+														th:title="${msgShippingState}" />
 												</div>
 											</div>
 										</div>
@@ -874,7 +874,7 @@
 												<label>Shipping country</label>
 												<div class="controls">
 													<select cssClass="shipping-country-list"
-														th:field="*{order.customer.delivery.country}">
+														th:field="*{customer.delivery.country}">
 														<option th:each="country : ${countries}" th:value="${country.isoCode}" th:text="${country.name}"/>
 													</select>
 												</div>

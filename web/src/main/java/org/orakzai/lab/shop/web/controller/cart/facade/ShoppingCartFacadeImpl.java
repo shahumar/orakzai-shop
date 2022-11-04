@@ -252,8 +252,8 @@ public class ShoppingCartFacadeImpl implements ShoppingCartFacade {
 
 	@Override
 	public ShoppingCart getShoppingCartModel(Customer customer, MerchantStore store) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return shoppingCartService.getByCustomer(customer);
 	}
 
 	@Override
