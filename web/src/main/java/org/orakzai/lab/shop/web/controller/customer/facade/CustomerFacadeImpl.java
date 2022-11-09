@@ -33,6 +33,8 @@ import org.orakzai.lab.shop.web.dto.customer.PersistableCustomer;
 import org.orakzai.lab.shop.web.dto.userpassword.UserReset;
 import org.orakzai.lab.shop.web.mapper.cart.ShoppingCartDataPopulator;
 import org.orakzai.lab.shop.web.mapper.customer.CustomerPopulator;
+import org.orakzai.lab.shop.web.security.authentication.CustomerAuthentication;
+import org.orakzai.lab.shop.web.security.manager.CustomerAuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -118,7 +120,7 @@ public class CustomerFacadeImpl implements CustomerFacade {
 			}
 		}
 		
-		Authentication authenticationToken = new UsernamePasswordAuthenticationToken(userName, password, authorities);
+		Authentication authenticationToken = CustomerAuthentication.unauthenticated(userName, password);
 		Authentication authentication = customerAuthenticationManager.authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		

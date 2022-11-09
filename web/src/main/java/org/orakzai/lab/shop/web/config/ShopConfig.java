@@ -31,7 +31,7 @@ public class ShopConfig implements WebMvcConfigurer {
 		
 		registry.addInterceptor(localeChangeInterceptor());
 		registry.addInterceptor(shopFilter);
-		registry.addInterceptor(adminFilter);
+		registry.addInterceptor(adminFilter).addPathPatterns("/admin");
 		
 	}
 	

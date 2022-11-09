@@ -31,8 +31,8 @@ public class ShopApplication implements CommandLineRunner {
 	@Autowired
     private ApplicationContext applicationContext;
 	
-	@Autowired
-	private InitializationDatabase initService;
+//	@Autowired
+//	private InitializationDatabase initService;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(ShopApplication.class, args);

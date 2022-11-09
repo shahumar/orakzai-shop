@@ -17,6 +17,7 @@ import org.orakzai.lab.shop.domain.business.user.service.PermissionService;
 import org.orakzai.lab.shop.domain.business.user.service.UserService;
 import org.orakzai.lab.shop.web.constants.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
+@Primary
 @Service("userDetailsService")
 public class UserServiceImpl implements WebUserServices {
 	

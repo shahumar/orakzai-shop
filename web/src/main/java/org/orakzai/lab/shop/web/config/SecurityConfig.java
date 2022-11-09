@@ -1,38 +1,40 @@
 package org.orakzai.lab.shop.web.config;
 
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.orakzai.lab.shop.web.security.provider.CustomerAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import lombok.AllArgsConstructor;
+
 @SuppressWarnings("deprecation")
 @Configuration
+@AllArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig {
 	
-	@Autowired
-	private UserDetailsService userDetailsService;
+	
+	private final UserDetailsService userDetailsService;
+	private final CustomerAuthenticationProvider customerAuthenticationProvider;
 	
 	@Bean
-    public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwowrdEncoder());
-        return authenticationManagerBuilder.build();
+    public AuthenticationManager authenticationManager() throws Exception {
+        DaoAuthenticationProvider ds = new DaoAuthenticationProvider();
+        ds.setUserDetailsService(userDetailsService);
+        ds.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(ds, customerAuthenticationProvider);
     }
 
 	@Bean
-	public static PasswordEncoder passwowrdEncoder() {
+	public static PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
@@ -53,7 +55,7 @@ public class SecurityConfig {
 			.anyRequest().authenticated()
 			.and()
 			.formLogin().permitAll()
-			.and()
+			.and().authenticationManager(authenticationManager())
 			.cors().disable()
 			.csrf().disable();
 		return http.build();
