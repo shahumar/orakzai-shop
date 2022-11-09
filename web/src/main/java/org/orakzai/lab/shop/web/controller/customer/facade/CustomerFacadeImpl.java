@@ -2,7 +2,6 @@ package org.orakzai.lab.shop.web.controller.customer.facade;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -34,10 +33,8 @@ import org.orakzai.lab.shop.web.dto.userpassword.UserReset;
 import org.orakzai.lab.shop.web.mapper.cart.ShoppingCartDataPopulator;
 import org.orakzai.lab.shop.web.mapper.customer.CustomerPopulator;
 import org.orakzai.lab.shop.web.security.authentication.CustomerAuthentication;
-import org.orakzai.lab.shop.web.security.manager.CustomerAuthenticationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
