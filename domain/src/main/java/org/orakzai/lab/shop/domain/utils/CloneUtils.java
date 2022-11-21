@@ -7,7 +7,9 @@ public class CloneUtils {
 
     public static LocalDate clone(LocalDate date) {
         if (date != null) {
-            return LocalDate.from(date);
+        	try {
+        		return LocalDate.from(date);
+        	} catch(Date)
         }
         return null;
     }

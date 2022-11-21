@@ -85,7 +85,7 @@ public class Language extends SalesManagerEntity<Integer, Language> implements A
             return false;
         } else {
             Language language = (Language) obj;
-            return (this.id == language.getId());
+            return (this.id.intValue() == language.getId().intValue());
         }
     }
 }

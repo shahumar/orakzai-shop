@@ -3,6 +3,7 @@ package org.orakzai.lab.shop.domain.business.shipping.model;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.orakzai.lab.shop.domain.business.catalog.product.model.manufacturer.ManufacturerDescription;
@@ -14,11 +15,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Set;
 
+@Slf4j
 @Getter
 @Setter
 public class ShippingOption implements Serializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShippingOption.class);
 
     /**
      *
@@ -44,7 +45,7 @@ public class ShippingOption implements Serializable {
             try {
                 this.optionPrice = new BigDecimal(this.getOptionPriceText());
             } catch(Exception e) {
-                LOGGER.equals("Can't convert price text " + this.getOptionPriceText() + " to big decimal");
+                log.error("Can't convert price text " + this.getOptionPriceText() + " to big decimal");;
             }
         }
 

@@ -173,7 +173,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
         ShippingConfiguration shippingConfiguration = null;
 
         BigDecimal grandTotal = new BigDecimal(0);
-        grandTotal.setScale(2, RoundingMode.HALF_UP);
+        var gtScale = grandTotal.setScale(2, RoundingMode.HALF_UP);
 
         //price by item
         /**
@@ -181,7 +181,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
          * subtotal
          */
         BigDecimal subTotal = new BigDecimal(0);
-        subTotal.setScale(2, RoundingMode.HALF_UP);
+        var stScale = subTotal.setScale(2, RoundingMode.HALF_UP);
         for(ShoppingCartItem item : summary.getProducts()) {
 
             BigDecimal st = item.getItemPrice().multiply(new BigDecimal(item.getQuantity()));
@@ -210,7 +210,7 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
                             BigDecimal orderTotalValue = itemSubTotal.getValue();
                             if(orderTotalValue==null) {
                                 orderTotalValue = new BigDecimal(0);
-                                orderTotalValue.setScale(2, RoundingMode.HALF_UP);
+                                var otv = orderTotalValue.setScale(2, RoundingMode.HALF_UP);
                             }
 
                             orderTotalValue = orderTotalValue.add(price.getFinalPrice());

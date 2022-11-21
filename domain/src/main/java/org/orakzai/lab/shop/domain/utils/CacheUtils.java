@@ -3,19 +3,13 @@ package org.orakzai.lab.shop.domain.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
-
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.modules.cms.impl.CacheManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-@Slf4j
+
 @Component("cache")
 public class CacheUtils {
 
@@ -24,17 +18,10 @@ public class CacheUtils {
     @Qualifier("serviceCache")
     private CacheManager cache;
 
-
 	public final static String REFERENCE_CACHE = "REF";
 
-	private final static String KEY_DELIMITER = "_";
-
-
-
 	public void putInCache(Object object, String keyName) throws Exception {
-
 		cache.getManager().getCache("default").put(keyName, object);
-
 	}
 
 
@@ -44,60 +31,20 @@ public class CacheUtils {
 
 	public List<String> getCacheKeys(MerchantStore store) throws Exception {
 
-//		  net.sf.ehcache.Cache cacheImpl = (net.sf.ehcache.Cache) cache.getNativeCache();
-		  List<String> returnKeys = new ArrayList<String>();
-//		  for (Object key: cacheImpl.getKeys()) {
-//
-//
-//				try {
-//					String sKey = (String)key;
-//
-//					// a key should be <storeId>_<rest of the key>
-//					int delimiterPosition = sKey.indexOf(KEY_DELIMITER);
-//
-//					if(delimiterPosition>0 && Character.isDigit(sKey.charAt(0))) {
-//
-//						String keyRemaining = sKey.substring(delimiterPosition+1);
-//						returnKeys.add(keyRemaining);
-//
-//					}
-//
-//				} catch (Exception e) {
-//					LOGGER.equals("key " + key + " cannot be converted to a String or parsed");
-//				}
-//		  }
-
+		List<String> returnKeys = new ArrayList<String>();
 		return returnKeys;
 	}
 
 	public void shutDownCache() throws Exception {
-
+		throw new Exception();
 	}
 
 	public void removeFromCache(String keyName) throws Exception {
-//		cache.evict(keyName);
+		throw new Exception();
 	}
 
 	public void removeAllFromCache(MerchantStore store) throws Exception {
-//		  net.sf.ehcache.Cache cacheImpl = (net.sf.ehcache.Cache) cache.getNativeCache();
-//		  for (Object key: cacheImpl.getKeys()) {
-//				try {
-//					String sKey = (String)key;
-//
-//					// a key should be <storeId>_<rest of the key>
-//					int delimiterPosition = sKey.indexOf(KEY_DELIMITER);
-//
-//					if(delimiterPosition>0 && Character.isDigit(sKey.charAt(0))) {
-//
-//
-//						cache.evict(key);
-//
-//					}
-//
-//				} catch (Exception e) {
-//					LOGGER.equals("key " + key + " cannot be converted to a String or parsed");
-//				}
-//		  }
+		throw new Exception();
 	}
 
 
