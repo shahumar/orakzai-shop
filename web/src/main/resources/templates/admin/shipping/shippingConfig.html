@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+	<th:block layout:fragment="extra_script">
+		<script type="text/javascript">
+			var priceFormatMessage = 'Wrong format';
+		</script>
+	
+	    <link th:href="@{/css/bootstrap/css/datepicker.css}" rel="stylesheet"></link>
+		<script th:src="@{/js/bootstrap/bootstrap-datepicker.js}"></script>
+		<script th:src="@{/js/ckeditor/ckeditor.js}"></script>
+		<script th:src="@{/js/jquery.formatCurrency-1.4.0.js}"></script>
+		<script th:src="@{/js/jquery.alphanumeric.pack.js}"></script>
+		<script th:src="@{/js/adminFunctions.js}"></script>
+		
+		<script type="text/javascript" th:inline="javascript">
+	
+	
+		</script>
+	</th:block>
+
+	<div class="tabbable" layout:fragment="body">
+			
+		<div th:replace="fragments/admin_tabs :: adminTab"/>
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
+				<div class="sm-ui-component">
+					
+					<h3 th:text="#{label.shipping.title}">
+						Shipping Configuration
+					</h3>
+					
+					<br/>
+					
+				
+                    <form method="POST" enctype="multipart/form-data" th:object="${configuration}" th:action="@{/admin/shipping/saveShippingConfiguration.html}">
+                       	<th:block th:if="${#fields.hasAnyErrors()}">
+                       		<div id="store.error" class="alert alert-error" style="display:none;">An error occured</div>
+                       		<div class="alert alert-error" th:each="err : ${#fields.allErrors()}" th:text="${err}"/>
+                       	</th:block>
+                        	
+                       	<div id="store.success" th:text="#{message.success}" class="alert alert-success" th:style="${success!=null ? 'display:block;' : 'display:none;'}">
+                       		Request successfull
+                       	</div>
+
+                           
+                        <div class="control-group">
+	                        <label th:for="${#ids.next('shipping.mode')}">Shipping mode</label>
+	                        <div class="controls">
+	                        	<input class="input-large highlight" type="radio" value="NATIONAL" th:classappend="${#fields.hasErrors('shipType') ? 'error' : ''}" id="shipType" th:field="*{shipType}"/>
+	                        	National
+	                            <input class="input-large highlight" type="radio" value="INTERNATIONAL" th:classappend="${#fields.hasErrors('shipType') ? 'error' : ''}" id="shipType" th:field="*{shipType}"/>
+	                            International
+	                            <span class="help-inline">
+	                            	
+	                            	<span th:errorclass="error" th:errors="*{shipType}" th:if="${#fields.hasErrors('shipType')}"/>
+	                            </span>
+	                        </div>
+                  		</div>
+
+						<input type="hidden" th:field="*{shipBaseType}"/>
+						<input type="hidden" th:field="*{shipOptionPriceType}"/>
+                 	
+		
+		                   <div class="form-actions">
+		                            <div class="pull-right">
+		                                    <button type="submit" class="btn btn-success">Submit</button>
+		                            </div>
+		                   </div>
+
+                        </form>
+                        
+                        <script th:inline="javascript">
+						
+						var pagingUrl = "/admin/shipping/countries/paging.html";
+						var updateUrl = "/admin/shipping/countries/update.html";
+						var refreshUrl = "/admin/shipping/shippingConfigs.html";
+						
+						var componentTitleKey = "Shipping Countries";
+						
+						isc.RestDataSource.create({
+							ID : "dataSource",
+							dataFormat : "json",
+							operationBindings : [ {
+								operationType : "fetch",
+								dataProtocol : "postParams",
+								dataURL : pagingUrl
+							}, {
+								operationType : "refresh",
+								dataProtocol : "postParams",
+								dataURL : refreshUrl
+							}, {
+								operationType : "update",
+								dataProtocol : "postParams",
+								dataURL : updateUrl,
+							}, ],
+							transformResponse : function(dsResponse, dsRequest,
+									jsonData) {
+
+								var status = isc.XMLTools.selectObjects(
+										jsonData, "/response/status");
+								//alert('check status ' + status);
+								if (status != 0) {
+									if (status == 9999) {//operation completed
+										//reload
+										
+										if (refreshUrl != null) {
+											window.location = refreshUrl;
+										}
+									} else {
+
+										var msg = isc.XMLTools.selectObjects(
+												jsonData,
+												"/response/statusMessage");
+										alert("! " + msg);
+									}
+								}
+							}
+						});
+
+						isc.ListGrid
+								.create({
+									ID : "entityList",
+									border : 1,
+									dataSource : "dataSource",
+									showRecordComponents : true,
+									showRecordComponentsByCell : true,
+									canRemoveRecords : false,
+									autoFetchData : true,
+									showFilterEditor : true,
+									filterOnKeypress : true,
+									dataFetchMode : "paged",
+									canEdit : /*[[${canEdit}]]*/false,
+									editByCell : true,
+									editEvent : "click",
+
+									fields : [ {
+										title : "[(#{label.entity.id})]",
+										name : "id",
+										canFilter : false
+									}, {
+										title : "[(#{label.entity.code})]",
+										name : "code",
+										canFilter : false
+									}, {
+										title : "[(#{label.entity.name})]",
+										name : "name",
+										canFilter : false
+									}, {
+										title : "[(#{label.entity.details})]",
+										name : "buttonField",
+										align : "center",
+										canFilter : false,
+										canSort : false,
+										canReorder : false
+									}
+
+									],
+									selectionType : "multiple",
+									removeData : function() {
+										if (confirm('Do you really want to remove this record ?')) {
+											return this.Super("removeData",
+													arguments);
+										}
+									},
+									fetchData : function() {
+										return this.Super("fetchData",
+												arguments);
+									},
+									/*[# th:if="${expandDetails!=null && expandDetails!=''}"]*/
+									canExpandRecords : true,
+									expansionMode : "detailField",
+									detailField : "[(${expandDetails})]",
+									/*[/]*/
+
+									/*[# th:if="${groupByEntity!=null && groupByEntity!=''}"]*/
+									groupStartOpen : "all",
+									groupByField : '[(${groupByEntity})]',
+									/*[/]*/
+									createRecordComponent : function(record,
+											colNum) {
+										var fieldName = this
+												.getFieldName(colNum);
+										if (fieldName == "buttonField") {
+
+											var button = isc.IButton
+													.create({
+														height : 18,
+														width : 65,
+														title : "[(#{label.entity.details})]",
+														click : function() {
+
+															var url = editUrl;
+															var queryString = '?id='
+																	+ record["[(${entityId})]"];
+															if (appendQueryStringToEdit) {
+																queryString = queryString
+																		+ '&[(${appendQueryStringToEdit})]';
+															}
+
+															var locationUrl = url
+																	+ queryString;
+															window.location = locationUrl;
+
+														}
+													});
+											return button;
+
+										}
+
+									}
+
+								});
+
+						// Define application layout
+						// ---------------------------------------------------------------------
+
+						isc.HLayout.create({
+							ID : "pageLayout",
+							width : "700",
+							height : "600",
+							position : "relative",
+							members : [ isc.SectionStack.create({
+								ID : "mainLayout",
+								visibilityMode : "multiple",
+								animateSections : true,
+								sections : [ {
+									title : "[(${componentTitleKey})]",
+									autoShow : true,
+									items : [ entityList ]
+								} ]
+							}) ]
+						});
+
+						isc.Page.setEvent("load", "pageLayout.draw()");
+					</script>
+                        
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

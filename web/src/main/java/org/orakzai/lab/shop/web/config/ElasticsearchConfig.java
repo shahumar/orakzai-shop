@@ -26,8 +26,8 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
     private int port;
 
 	
-	@Override
 	@Bean
+	@Override
 	public RestHighLevelClient elasticsearchClient() {
 		
 		RestClientBuilder builder = RestClient
@@ -43,7 +43,9 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
 
 
 	private Header[] compatibilityHeaders() {
-		return new Header[] {new BasicHeader(HttpHeaders.ACCEPT, "application/vnd.elasticsearch+json;compatible-with=7"), new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7")};
+		return new Header[] {new BasicHeader(
+				HttpHeaders.ACCEPT, "application/vnd.elasticsearch+json;compatible-with=7"), 
+				new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7")};
 	}
 	
 	

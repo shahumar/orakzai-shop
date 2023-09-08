@@ -1,6 +1,5 @@
 package org.orakzai.lab.shop.domain.business.catalog.product.service;
 
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -55,344 +54,328 @@ import javax.transaction.Transactional;
 @Service("productService")
 public class ProductServiceImpl extends SalesManagerEntityServiceImpl<Long, Product> implements ProductService {
 
-    ProductRepository productRepository;
+	ProductRepository productRepository;
 
-    @Autowired
-    CategoryService categoryService;
+	@Autowired
+	CategoryService categoryService;
 
-    @Autowired
-    ProductAvailabilityService productAvailabilityService;
+	@Autowired
+	ProductAvailabilityService productAvailabilityService;
 
-    @Autowired
-    ProductPriceService productPriceService;
+	@Autowired
+	ProductPriceService productPriceService;
 
+	@Autowired
+	ProductAttributeService productAttributeService;
 
-    @Autowired
-    ProductAttributeService productAttributeService;
+	@Autowired
+	ProductRelationshipService productRelationshipService;
 
-    @Autowired
-    ProductRelationshipService productRelationshipService;
+	@Autowired
+	ProductSearchService searchService;
 
-    @Autowired
-    ProductSearchService searchService;
+	@Autowired
+	ProductImageService productImageService;
 
-    @Autowired
-    ProductImageService productImageService;
+	@Autowired
+	CoreConfiguration configuration;
 
-    @Autowired
-    CoreConfiguration configuration;
+	@Autowired
+	public ProductServiceImpl(ProductRepository productRepository) {
+		super(productRepository);
+		this.productRepository = productRepository;
+	}
 
-    @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
-        super(productRepository);
-        this.productRepository = productRepository;
-    }
+	@Override
+	public void addProductDescription(Product product, ProductDescription description) throws ServiceException {
 
-    @Override
-    public void addProductDescription(Product product, ProductDescription description)
-            throws ServiceException {
+		if (product.getDescriptions() == null) {
+			product.setDescriptions(new HashSet<>());
+		}
 
-
-        if(product.getDescriptions()==null) {
-            product.setDescriptions(new HashSet<>());
-        }
-
-        product.getDescriptions().add(description);
-        description.setProduct(product);
-        update(product);
+		product.getDescriptions().add(description);
+		description.setProduct(product);
+		update(product);
 //        searchService.index(product.getMerchantStore(), product);
-    }
+	}
 
-    @Override
-    public List<Product> getProducts(List<Long> categoryIds) throws ServiceException {
+	@Override
+	public List<Product> getProducts(List<Long> categoryIds) throws ServiceException {
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        Set ids = new HashSet(categoryIds);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Set ids = new HashSet(categoryIds);
 //        return productDao.getProductsListByCategories(ids);
-        return null;
+		return null;
 
-    }
+	}
 
-    @Override
-    public List<Product> getProducts(List<Long> categoryIds, Language language) throws ServiceException {
+	@Override
+	public List<Product> getProducts(List<Long> categoryIds, Language language) throws ServiceException {
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        Set<Long> ids = new HashSet(categoryIds);
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Set<Long> ids = new HashSet(categoryIds);
 //        return productDao.getProductsListByCategories(ids, language);
-        return null;
+		return null;
 
-    }
+	}
 
-    @Override
-    public ProductDescription getProductDescription(Product product, Language language) {
-        for (ProductDescription description : product.getDescriptions()) {
-            if (description.getLanguage().equals(language)) {
-                return description;
-            }
-        }
-        return null;
-    }
+	@Override
+	public ProductDescription getProductDescription(Product product, Language language) {
+		for (ProductDescription description : product.getDescriptions()) {
+			if (description.getLanguage().equals(language)) {
+				return description;
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public Product getBySeUrl(MerchantStore store, String seUrl, Locale locale) {
+	@Override
+	public Product getBySeUrl(MerchantStore store, String seUrl, Locale locale) {
 //        return productDao.getBySeUrl(store, seUrl, locale);
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Product getProductForLocale(long productId, Language language, Locale locale)
-            throws ServiceException {
+	@Override
+	public Product getProductForLocale(long productId, Language language, Locale locale) throws ServiceException {
 //        Product product =  productDao.getProductForLocale(productId, language, locale);
 //
 //
 //        CatalogServiceHelper.setToAvailability(product, locale);
 //        CatalogServiceHelper.setToLanguage(product, language.getId());
 //        return product;
-    	return null;
-    }
+		return null;
+	}
 
-    @Override
-    public List<Product> getProductsForLocale(Category category,
-                                              Language language, Locale locale) throws ServiceException {
+	@Override
+	public List<Product> getProductsForLocale(Category category, Language language, Locale locale)
+			throws ServiceException {
 
-        if(category==null) {
-            throw new ServiceException("The category is null");
-        }
+		if (category == null) {
+			throw new ServiceException("The category is null");
+		}
 
-        //Get the category list
-        StringBuilder lineage = new StringBuilder().append(category.getLineage()).append(category.getId()).append("/");
-        List<Category> categories = categoryService.listByLineage(category.getMerchantStore(),lineage.toString());
-        Set<Long> categoryIds = new HashSet<Long>();
-        for(Category c : categories) {
+		// Get the category list
+		StringBuilder lineage = new StringBuilder().append(category.getLineage()).append(category.getId()).append("/");
+		List<Category> categories = categoryService.listByLineage(category.getMerchantStore(), lineage.toString());
+		Set<Long> categoryIds = new HashSet<Long>();
+		for (Category c : categories) {
 
-            categoryIds.add(c.getId());
+			categoryIds.add(c.getId());
 
-        }
+		}
 
-        categoryIds.add(category.getId());
+		categoryIds.add(category.getId());
 
-        //Get products
+		// Get products
 //        List<Product> products = productDao.getProductsForLocale(category.getMerchantStore(), categoryIds, language, locale);
 
-        //Filter availability
+		// Filter availability
 
 //        return products;
-        return null;
-    }
+		return null;
+	}
 
-    @Transactional
-    @Override
-    public ProductList listByStore(MerchantStore store,
-                                   Language language, ProductCriteria criteria) {
-    	Specification<Product> specs = ProductSpecs.getByStore(store);
-    	if (!CollectionUtils.isEmpty(criteria.getCategoryIds())) {
-    		specs = specs.and(ProductSpecs.getByCategoryIds(criteria.getCategoryIds()));
-    	}
-    	if (!CollectionUtils.isEmpty(criteria.getProductIds())) {
-    		specs = specs.and(ProductSpecs.getByIds(criteria.getProductIds()));
-    	}
-    	if (criteria.getManufacturerId() != null) {
-    		specs = specs.and(ProductSpecs.getByManufacturer(criteria.getManufacturerId()));
-    	}
-    	if (criteria.getAvailable() != null) {
-    		specs = specs.and(ProductSpecs.getProductByAvailability(criteria.getAvailable()));
-    	}
-    	if (!StringUtils.isBlank(criteria.getCode())) {
-    		specs = specs.and(ProductSpecs.getBySku(criteria.getCode()));
-    	}
-    	if (!StringUtils.isBlank(criteria.getProductName())) {
-    		specs = specs.and(ProductSpecs.getProductDescriptions(language, criteria.getProductName()));
-    	}
-    	
-    	Pageable pageable = PageRequest.of(criteria.getStartIndex(), 20);
-    	
-    	Page<Product> products = productRepository.findAll(specs, pageable);
-    	ProductList list = new ProductList();
-    	list.setProducts(products.toList());
-    	return list;
-    }
+	@Transactional
+	@Override
+	public ProductList listByStore(MerchantStore store, Language language, ProductCriteria criteria) {
+		Specification<Product> specs = ProductSpecs.getByStore(store);
+		if (!CollectionUtils.isEmpty(criteria.getCategoryIds())) {
+			specs = specs.and(ProductSpecs.getByCategoryIds(criteria.getCategoryIds()));
+		}
+		if (!CollectionUtils.isEmpty(criteria.getProductIds())) {
+			specs = specs.and(ProductSpecs.getByIds(criteria.getProductIds()));
+		}
+		if (criteria.getManufacturerId() != null) {
+			specs = specs.and(ProductSpecs.getByManufacturer(criteria.getManufacturerId()));
+		}
+		if (criteria.getAvailable() != null) {
+			specs = specs.and(ProductSpecs.getProductByAvailability(criteria.getAvailable()));
+		}
+		if (!StringUtils.isBlank(criteria.getCode())) {
+			specs = specs.and(ProductSpecs.getBySku(criteria.getCode()));
+		}
+		if (!StringUtils.isBlank(criteria.getProductName())) {
+			specs = specs.and(ProductSpecs.getProductDescriptions(language, criteria.getProductName()));
+		}
 
-    @Override
-    public List<Product> listByStore(MerchantStore store) {
+		Pageable pageable = PageRequest.of(criteria.getStartIndex(), 20);
 
-        return productRepository.findByMerchantStore(store);
-    }
+		Page<Product> products = productRepository.findAll(specs, pageable);
+		ProductList list = new ProductList();
+		list.setProducts(products.toList());
+		return list;
+	}
 
-    @Override
-    public List<Product> listByTaxClass(TaxClass taxClass) {
+	@Override
+	public List<Product> listByStore(MerchantStore store) {
+
+		return productRepository.findByMerchantStore(store);
+	}
+
+	@Override
+	public List<Product> listByTaxClass(TaxClass taxClass) {
 //        return productDao.listByTaxClass(taxClass);
-    	return null;
-    }
+		return null;
+	}
 
-    @Override
-    public Product getByCode(String productCode, Language language) {
+	@Override
+	public Product getByCode(String productCode, Language language) {
 //        return productDao.getByCode(productCode, language);
-    	return null;
-    }
+		return null;
+	}
 
+	@Override
+	public void delete(Product product) throws ServiceException {
+		log.debug("Deleting product");
+		Validate.notNull(product, "Product cannot be null");
+		Validate.notNull(product.getMerchantStore(), "MerchantStore cannot be null in product");
+		product = this.getById(product.getId());// Prevents detached entity error
+		product.setCategories(null);
 
+		Set<ProductImage> images = product.getImages();
 
-
-
-    @Override
-    public void delete(Product product) throws ServiceException {
-        log.debug("Deleting product");
-        Validate.notNull(product, "Product cannot be null");
-        Validate.notNull(product.getMerchantStore(), "MerchantStore cannot be null in product");
-        product = this.getById(product.getId());//Prevents detached entity error
-        product.setCategories(null);
-
-        Set<ProductImage> images = product.getImages();
-
-        for(ProductImage image : images) {
+		for (ProductImage image : images) {
 //            productImageService.removeProductImage(image);
-        }
+		}
 
-        product.setImages(null);
+		product.setImages(null);
 
-        //related - featured
-        List<ProductRelationship> relationships = productRelationshipService.listByProduct(product);
-        for(ProductRelationship relationship : relationships) {
-            productRelationshipService.delete(relationship);
-        }
+		// related - featured
+		List<ProductRelationship> relationships = productRelationshipService.listByProduct(product);
+		for (ProductRelationship relationship : relationships) {
+			productRelationshipService.delete(relationship);
+		}
 
-        super.delete(product);
+		super.delete(product);
 //        searchService.deleteIndex(product.getMerchantStore(), product);
 
-    }
+	}
 
-    @Override
-    public void create(Product product) throws ServiceException {
-        super.create(product);
+	@Override
+	public void create(Product product) throws ServiceException {
+		super.create(product);
 //        searchService.index(product.getMerchantStore(), product);
-    }
+	}
 
+	@Override
+	@Transactional
+	public void saveOrUpdate(Product product) throws ServiceException {
 
+		log.debug("Save or update product ");
+		Validate.notNull(product, "product cannot be null");
+		Validate.notNull(product.getAvailabilities(), "product must have at least one availability");
+		Validate.notEmpty(product.getAvailabilities(), "product must have at least one availability");
 
-    @Override
-    @Transactional
-    public void saveOrUpdate(Product product) throws ServiceException {
+		// List of original availabilities
+		Set<ProductAvailability> originalAvailabilities = null;
 
-        log.debug("Save or update product ");
-        Validate.notNull(product,"product cannot be null");
-        Validate.notNull(product.getAvailabilities(),"product must have at least one availability");
-        Validate.notEmpty(product.getAvailabilities(),"product must have at least one availability");
+		// List of original attributes
+		Set<ProductAttribute> originalAttributes = null;
 
-        //List of original availabilities
-        Set<ProductAvailability> originalAvailabilities = null;
+		// List of original reviews
+		Set<ProductRelationship> originalRelationships = null;
 
-        //List of original attributes
-        Set<ProductAttribute> originalAttributes = null;
+		if (product.getId() != null && product.getId() > 0) {
+			log.debug("Update product", product.getId());
+			// get original product
+			Product originalProduct = this.getById(product.getId());
+			originalAvailabilities = originalProduct.getAvailabilities();
+			originalAttributes = originalProduct.getAttributes();
+			originalRelationships = originalProduct.getRelationships();
+		} else {
 
-        //List of original reviews
-        Set<ProductRelationship> originalRelationships = null;
-    
-        if(product.getId()!=null && product.getId()>0) {
-            log.debug("Update product",product.getId());
-            //get original product
-            Product originalProduct = this.getById(product.getId());
-            originalAvailabilities = originalProduct.getAvailabilities();
-            originalAttributes = originalProduct.getAttributes();
-            originalRelationships = originalProduct.getRelationships();
-        } else {
+			Set<ProductDescription> productDescriptions = product.getDescriptions();
+			product.setDescriptions(null);
 
-            Set<ProductDescription> productDescriptions = product.getDescriptions();
-            product.setDescriptions(null);
+			super.create(product);
+			for (ProductDescription productDescription : productDescriptions) {
+				addProductDescription(product, productDescription);
+			}
+		}
 
-            super.create(product);
-            for(ProductDescription productDescription : productDescriptions) {
-                addProductDescription(product,productDescription);
-            }
-        }
+		log.debug("Creating availabilities");
 
+		// get availabilities
+		Set<ProductAvailability> availabilities = product.getAvailabilities();
+		List<Long> newAvailabilityIds = new ArrayList<>();
+		if (availabilities != null && availabilities.size() > 0) {
+			for (ProductAvailability availability : availabilities) {
+				availability.setProduct(product);
+				productAvailabilityService.saveOrUpdate(availability);
+				newAvailabilityIds.add(availability.getId());
+				// check prices
+				Set<ProductPrice> prices = availability.getPrices();
+				if (prices != null && prices.size() > 0) {
 
-        log.debug("Creating availabilities");
+					for (ProductPrice price : prices) {
+						price.setProductAvailability(availability);
+						productPriceService.saveOrUpdate(price);
+					}
+				}
+			}
+		}
 
-        //get availabilities
-        Set<ProductAvailability> availabilities = product.getAvailabilities();
-        List<Long> newAvailabilityIds = new ArrayList<>();
-        if(availabilities!=null && availabilities.size()>0) {
-            for(ProductAvailability availability : availabilities) {
-                availability.setProduct(product);
-                productAvailabilityService.saveOrUpdate(availability);
-                newAvailabilityIds.add(availability.getId());
-                //check prices
-                Set<ProductPrice> prices = availability.getPrices();
-                if(prices!=null && prices.size()>0) {
+		// cleanup old availability
+		if (originalAvailabilities != null) {
+			for (ProductAvailability availability : originalAvailabilities) {
+				if (!newAvailabilityIds.contains(availability.getId())) {
+					productAvailabilityService.delete(availability);
+				}
+			}
+		}
 
-                    for(ProductPrice price : prices) {
-                        price.setProductAvailability(availability);
-                        productPriceService.saveOrUpdate(price);
-                    }
-                }
-            }
-        }
+		log.debug("Creating attributes");
+		List<Long> newAttributesIds = new ArrayList<Long>();
+		if (product.getAttributes() != null && product.getAttributes().size() > 0) {
+			Set<ProductAttribute> attributes = product.getAttributes();
+			for (ProductAttribute attribute : attributes) {
+				attribute.setProduct(product);
+				productAttributeService.saveOrUpdate(attribute);
+				newAttributesIds.add(attribute.getId());
+			}
+		}
 
-        //cleanup old availability
-        if(originalAvailabilities!=null) {
-            for(ProductAvailability availability : originalAvailabilities) {
-                if(!newAvailabilityIds.contains(availability.getId())) {
-                    productAvailabilityService.delete(availability);
-                }
-            }
-        }
+		// cleanup old attributes
+		if (originalAttributes != null) {
+			for (ProductAttribute attribute : originalAttributes) {
+				if (!newAttributesIds.contains(attribute.getId())) {
+					productAttributeService.delete(attribute);
+				}
+			}
+		}
 
-        log.debug("Creating attributes");
-        List<Long> newAttributesIds = new ArrayList<Long>();
-        if(product.getAttributes()!=null && product.getAttributes().size()>0) {
-            Set<ProductAttribute> attributes = product.getAttributes();
-            for(ProductAttribute attribute : attributes) {
-                attribute.setProduct(product);
-                productAttributeService.saveOrUpdate(attribute);
-                newAttributesIds.add(attribute.getId());
-            }
-        }
+		log.debug("Creating relationships");
+		List<Long> newRelationshipIds = new ArrayList<Long>();
+		if (product.getRelationships() != null && product.getRelationships().size() > 0) {
+			Set<ProductRelationship> relationships = product.getRelationships();
+			for (ProductRelationship relationship : relationships) {
+				relationship.setProduct(product);
+				productRelationshipService.saveOrUpdate(relationship);
+				newRelationshipIds.add(relationship.getId());
+			}
+		}
+		// cleanup old relationships
+		if (originalRelationships != null) {
+			for (ProductRelationship relationship : originalRelationships) {
+				if (!newRelationshipIds.contains(relationship.getId())) {
+					productRelationshipService.delete(relationship);
+				}
+			}
+		}
 
-        //cleanup old attributes
-        if(originalAttributes!=null) {
-            for(ProductAttribute attribute : originalAttributes) {
-                if(!newAttributesIds.contains(attribute.getId())) {
-                    productAttributeService.delete(attribute);
-                }
-            }
-        }
+		log.debug("Creating images");
+		log.info("Creating images");
 
+		// get images
 
-        log.debug("Creating relationships");
-        List<Long> newRelationshipIds = new ArrayList<Long>();
-        if(product.getRelationships()!=null && product.getRelationships().size()>0) {
-            Set<ProductRelationship> relationships = product.getRelationships();
-            for(ProductRelationship relationship : relationships) {
-                relationship.setProduct(product);
-                productRelationshipService.saveOrUpdate(relationship);
-                newRelationshipIds.add(relationship.getId());
-            }
-        }
-        //cleanup old relationships
-        if(originalRelationships!=null) {
-            for(ProductRelationship relationship : originalRelationships) {
-                if(!newRelationshipIds.contains(relationship.getId())) {
-                    productRelationshipService.delete(relationship);
-                }
-            }
-        }
+		if (product.getId() != null && product.getId() > 0) {
+			super.update(product);
+		}
 
+		searchService.index(product.getMerchantStore(), product);
 
-        log.debug("Creating images");
-        log.info("Creating images");
+	}
 
-        //get images
-
-
-
-        if(product.getId()!=null && product.getId()>0) {
-            super.update(product);
-        }
-
-        searchService.index(product.getMerchantStore(), product);
-
-    }
-    
 	@Override
 	public void saveProductImage(ProductImage image) throws ServiceException {
 		Set<ProductImage> originalProductImages = null;
@@ -408,7 +391,7 @@ public class ProductServiceImpl extends SalesManagerEntityServiceImpl<Long, Prod
 			newImageIds.add(image.getId());
 			originalProductImages = image.getProduct().getImages();
 		}
-		
+
 		if (originalProductImages != null) {
 			for (ProductImage img : originalProductImages) {
 				if (!newImageIds.contains(image.getId())) {

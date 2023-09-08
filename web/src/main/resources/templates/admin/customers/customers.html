@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+	<th:block layout:fragment="extra_script">
+		<script type="text/javascript">
+			var priceFormatMessage = 'Wrong format';
+		</script>
+	
+	    <link th:href="@{/css/bootstrap/css/datepicker.css}" rel="stylesheet"></link>
+		<script th:src="@{/js/bootstrap/bootstrap-datepicker.js}"></script>
+		<script th:src="@{/js/ckeditor/ckeditor.js}"></script>
+		<script th:src="@{/js/jquery.formatCurrency-1.4.0.js}"></script>
+		<script th:src="@{/js/jquery.alphanumeric.pack.js}"></script>
+		<script th:src="@{/js/adminFunctions.js}"></script>
+		
+		<script type="text/javascript" th:inline="javascript">
+	
+	
+		</script>
+	</th:block>
+
+	<div class="tabbable" layout:fragment="body">
+			
+		<div th:replace="fragments/admin_tabs :: adminTab"/>
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
+				<div class="sm-ui-component">
+					
+					<h3 th:text="#{label.customer.list}">
+						Customer list
+					</h3>
+					
+					<br/>
+					
+				
+                    
+                        
+                       <script th:inline="javascript">
+						
+						var pagingUrl = "/admin/customers/page.html";
+						var updateUrl = "/admin/customers/customer.html";
+						var removeUrl = "/admin/customers/remove.html"
+						var componentTitleKey = "Customers list";
+						
+						isc.RestDataSource.create({
+							ID : "dataSource",
+							dataFormat : "json",
+							operationBindings : [ {
+								operationType : "fetch",
+								dataProtocol : "postParams",
+								dataURL : pagingUrl
+							}, {
+								operationType : "update",
+								dataProtocol : "postParams",
+								dataURL : updateUrl,
+							}, ],
+							transformResponse : function(dsResponse, dsRequest,
+									jsonData) {
+
+								var status = isc.XMLTools.selectObjects(
+										jsonData, "/response/status");
+								//alert('check status ' + status);
+								if (status != 0) {
+									if (status == 9999) {//operation completed
+										//reload
+										
+										if (refreshUrl != null) {
+											window.location = refreshUrl;
+										}
+									} else {
+
+										var msg = isc.XMLTools.selectObjects(
+												jsonData,
+												"/response/statusMessage");
+										alert("! " + msg);
+									}
+								}
+							}
+						});
+
+						isc.ListGrid
+								.create({
+									ID : "entityList",
+									border : 1,
+									dataSource : "dataSource",
+									showRecordComponents : true,
+									showRecordComponentsByCell : true,
+									canRemoveRecords : false,
+									autoFetchData : true,
+									showFilterEditor : true,
+									filterOnKeypress : true,
+									dataFetchMode : "paged",
+									canEdit : /*[[${canEdit}]]*/false,
+									editByCell : true,
+									editEvent : "click",
+
+									fields : [ {
+										title : "[(#{label.entity.id})]",
+										name : "id",
+										canFilter : false
+									}, {
+										title : "[(#{label.customer.firstname})]",
+										name : "firstname",
+										canFilter : false
+									}, {
+										title : "[(#{label.customer.lastname})]",
+										name : "lastname",
+										canFilter : true
+									},{
+										title : "[(#{label.customer.email})]",
+										name : "email",
+										canFilter : true
+									},{
+										title : "[(#{label.customer.country})]",
+										name : "country",
+										canFilter : false
+									}, 
+									{
+										title : "[(#{label.entity.details})]",
+										name : "buttonField",
+										align : "center",
+										canFilter : false,
+										canSort : false,
+										canReorder : false
+									}
+
+									],
+									selectionType : "multiple",
+									removeData : function() {
+										if (confirm('Do you really want to remove this record ?')) {
+											return this.Super("removeData",
+													arguments);
+										}
+									},
+									fetchData : function() {
+										return this.Super("fetchData",
+												arguments);
+									},
+									/*[# th:if="${expandDetails!=null && expandDetails!=''}"]*/
+									canExpandRecords : true,
+									expansionMode : "detailField",
+									detailField : "[(${expandDetails})]",
+									/*[/]*/
+
+									/*[# th:if="${groupByEntity!=null && groupByEntity!=''}"]*/
+									groupStartOpen : "all",
+									groupByField : '[(${groupByEntity})]',
+									/*[/]*/
+									createRecordComponent : function(record,
+											colNum) {
+										var fieldName = this
+												.getFieldName(colNum);
+										if (fieldName == "buttonField") {
+
+											var button = isc.IButton
+													.create({
+														height : 18,
+														width : 65,
+														title : "[(#{label.entity.details})]",
+														click : function() {
+
+															var url = editUrl;
+															var queryString = '?id='
+																	+ record["[(${entityId})]"];
+															if (appendQueryStringToEdit) {
+																queryString = queryString
+																		+ '&[(${appendQueryStringToEdit})]';
+															}
+
+															var locationUrl = url
+																	+ queryString;
+															window.location = locationUrl;
+
+														}
+													});
+											return button;
+
+										}
+
+									}
+
+								});
+
+						// Define application layout
+						// ---------------------------------------------------------------------
+
+						isc.HLayout.create({
+							ID : "pageLayout",
+							width : "700",
+							height : "600",
+							position : "relative",
+							members : [ isc.SectionStack.create({
+								ID : "mainLayout",
+								visibilityMode : "multiple",
+								animateSections : true,
+								sections : [ {
+									title : "[(${componentTitleKey})]",
+									autoShow : true,
+									items : [ entityList ]
+								} ]
+							}) ]
+						});
+
+						isc.Page.setEvent("load", "pageLayout.draw()");
+					</script>
+                        
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

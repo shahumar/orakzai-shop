@@ -2,13 +2,6 @@ package org.orakzai.lab.shop.domain.business.content.service;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import lombok.extern.slf4j.Slf4j;
 import org.orakzai.lab.shop.domain.business.content.dao.ContentRepository;
 import org.orakzai.lab.shop.domain.business.content.model.Content;
 import org.orakzai.lab.shop.domain.business.content.model.ContentDescription;
@@ -21,6 +14,11 @@ import org.orakzai.lab.shop.domain.business.generic.service.SalesManagerEntitySe
 import org.orakzai.lab.shop.domain.business.merchant.model.MerchantStore;
 import org.orakzai.lab.shop.domain.business.reference.language.model.Language;
 import org.orakzai.lab.shop.domain.modules.cms.content.StaticContentFileManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -105,7 +103,7 @@ public class ContentServiceImpl
 
     @Override
     public Content getById( Long id ) {
-    	return contentRepository.getById(id);
+    	return contentRepository.findById(id).get();
     }
 
     @Override

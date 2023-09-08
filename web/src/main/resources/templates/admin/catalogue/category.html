@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/admin.html}">
+<body>
+	<th:block layout:fragment="extra_script">
+		<script type="text/javascript">
+			var priceFormatMessage = 'Wrong format';
+		</script>
+	
+	    <link th:href="@{/css/bootstrap/css/datepicker.css}" rel="stylesheet"></link>
+		<script th:src="@{/js/bootstrap/bootstrap-datepicker.js}"></script>
+		<script th:src="@{/js/ckeditor/ckeditor.js}"></script>
+		<script th:src="@{/js/jquery.formatCurrency-1.4.0.js}"></script>
+		<script th:src="@{/js/jquery.alphanumeric.pack.js}"></script>
+		<script th:src="@{/js/adminFunctions.js}"></script>
+		
+		<script type="text/javascript" th:inline="javascript">
+	
+	
+			$(function(){
+	
+				$('#order').numeric();
+				if($('#code').val() == "") {
+					$('.btn').addClass("disabled")
+				}
+				/*[# th:each="description, counter : ${category.descriptions}"]*/
+					$("#name[(${counter})]").friendurl({id : 'seUrl[(${counter})]'});
+				/*[/]*/
+				
+			});
+	
+			function validateCode() {
+				$('#checkCodeStatus').html('<img src="<c:url value="/resources/img/ajax-loader.gif" />');
+				$('#checkCodeStatus').show();
+				var code = $("#code").val();
+				var id = $("#id").val();
+				checkCode(code,id,'/admin/categories/checkCategoryCode.html');
+			}
+			
+			function callBackCheckCode(msg,code) {
+				console.log(code);
+				if(code==0) {
+					$('.btn').removeClass('disabled');
+				}
+				if(code==9999) {
+
+					$('#checkCodeStatus').html('<font color="green">This code is available</font>');
+					$('#checkCodeStatus').show();
+					$('.btn').removeClass('disabled');
+				}
+				if(code==9998) {
+
+					$('#checkCodeStatus').html('<font color="red">This code already exist</font>');
+					$('#checkCodeStatus').show();
+					$('.btn').addClass('disabled');
+				}
+				
+			}
+			
+			
+		</script>
+	</th:block>
+
+	<div class="tabbable" layout:fragment="body">
+			
+		<div th:replace="fragments/admin_tabs :: adminTab"/>
+
+		<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
+				<div class="sm-ui-component">
+					
+					<h3 th:if="#{category.id!=null && category.id>0}" th:text="#{label.category.edit}">
+						Edit Category
+					</h3>
+					<h3 th:unless="#{category.id!=null && category.id>0}"  th:text="#{category.create}">
+						Create Category
+					</h3>
+					
+					<br/>
+					
+					<br/><br/>
+
+                    <form method="POST" enctype="multipart/form-data" th:object="${category}" th:action="@{/admin/categories/save.html}">
+                       	<th:block th:if="${#fields.hasAnyErrors()}">
+                       		<div id="store.error" class="alert alert-error" style="display:none;">An error occured</div>
+                       		<div class="alert alert-error" th:each="err : ${#fields.allErrors()}" th:text="${err}"/>
+                       	</th:block>
+                        	
+                       	<div id="store.success" th:text="#{message.success}" class="alert alert-success" th:style="${success!=null ? 'display:block;' : 'display:none;'}">
+                       		Request successfull
+                       	</div>
+
+                           
+                        <div class="control-group">
+	                        <label th:for="${#ids.next('category.parent')}">Parent Category</label>
+	                        <div class="controls">
+	                        	<input class="input-large highlight" th:classappend="${#fields.hasErrors('parent') ? 'error' : ''}" id="parent" th:field="*{parent}"/>
+	                            <span class="help-inline">
+	                            	<th:block th:text="#{label.generic.alphanumeric}">
+	                            		Alphanumeric
+	                            	</th:block>
+	                            	<span th:errorclass="error" th:errors="*{parent}" th:if="${#fields.hasErrors('parent')}"/>
+	                            </span>
+	                        </div>
+                  		</div>
+
+						<input type="hidden" th:field="*{id}"/>
+                 	
+
+                  		<div class="control-group">
+                        	<label th:for="${#ids.next('category.visible')}">Visible</label>
+                        	<div class="controls">
+                        		<input type="checkbox" th:field="*{visible}"/>
+                        	</div>
+                  		</div>
+                  		
+	                  	
+	                  	<div class="control-group">
+                        	<label th:for="${#ids.next('category.code')}" >Category code</label>
+                          	<div class="controls">
+                          	
+                          		<input onblur="validateCode()" class="input-large highlight" th:classappend="${#fields.hasErrors('code') ? 'error' : ''}" id="code" th:field="*{code}"/>
+	                            <span class="help-inline">
+	                            	<span th:errorclass="error" th:errors="*{code}" th:if="${#fields.hasErrors('code')}"/>
+	                            </span>
+                          	</div>
+                    	</div>
+
+                 
+				    	<th:block th:each="description, counter : *{descriptions}">
+
+	                        <div class="control-group">
+	
+	                              <label class="required" th:for="${#ids.next('productedit.categoryname')}">Category name ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              		<input class="input-large highlight" th:id="'name' + ${counter.index}" th:field="*{descriptions[__${counter.index}__].name}"/>
+	                                    <span class="help-inline">
+	                                    <span th:errorClass="error" th:errors="${category.descriptions[__${counter.index}__].name}" th:if="${category.descriptions[__${counter.index}__].name}" />
+	                              </div>
+	
+	                       </div>
+	
+	                      
+	                        <div class="control-group">
+	                              <label th:for="${#ids.next('sefurl')}" class="required">Search engine friendly url ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                   <input th:id="'seUrl'+${counter.index}" class="input-large" th:field="*{descriptions[__${counter.index}__].seUrl}"/>
+	                                   <span class="help-inline">
+	                                   <span th:errorClass="error" th:errors="${description.seUrl}" th:if="${#fields.hasErrors('description.seUrl')}" />
+	                              </div>
+	                       </div>
+	                       
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${#ids.next('categoryHighlight')}">Category highlight ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              		<input class="input-large" th:field="*{descriptions[__${counter.index}__].categoryHighlight}"/>
+	                                    <span class="help-inline" th:errorClass="error" th:errors="${category.descriptions[__${counter.index}__].categoryHighlight}"/>
+	                              </div>
+	
+	                       </div>
+	
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${#ids.next('categorydescription')}">Category description ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                              	     <textarea cols="30" th:value="${category.descriptions[__${counter.index}__].description}" th:id="'descriptions'+${counter.index}+'.description'" th:field="*{descriptions[__${counter.index}__].description}">
+	                        			 </textarea>
+	                              </div>                
+	                        <script type="text/javascript" th:inline="javascript">
+	
+								CKEDITOR.replace('descriptions[[${counter.index}]].description',
+								{
+									skin : 'office2003',
+									toolbar : 
+									[
+										['Source','-','Save','NewPage','Preview'], 
+										['Cut','Copy','Paste','PasteText','-','Print'], 
+										['Undo','Redo','-','Find','-','SelectAll','RemoveFormat'], '/', 
+										['Bold','Italic','Underline','Strike','-','Subscript','Superscript'], 
+										['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'], 
+										['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'], 
+										['Link','Unlink','Anchor'], 
+										['Image','Flash','Table','HorizontalRule','SpecialChar','PageBreak'], '/', 
+										['Styles','Format','Font','FontSize'], ['TextColor','BGColor'], 
+										['Maximize', 'ShowBlocks'] 
+									],
+									
+									filebrowserWindowWidth : '720',
+	        						filebrowserWindowHeight : '740',
+									filebrowserImageBrowseUrl :    '<c:url value="/admin/content/fileBrowser.html"/>'
+									
+	
+								});
+	
+
+							</script>
+	                              
+	                              
+	                              
+	                       </div>
+	                      
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${category.descriptions[__${counter.index}__].metatagTitle}">Category title ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                   <input class="input-large" th:field="*{descriptions[__${counter.index}__].metatagTitle}"/>
+	                                   <span class="help-inline" th:errorClass="error" th:errors="${category.descriptions[__${counter.index}__].metatagTitle}"/>
+	                              </div>
+	                       </div>
+	
+	                      
+	
+	                        <div class="control-group">
+	                              <label class="required" th:for="${category.descriptions[__${counter.index}__].metatagDescription}">Metatag description ([[${description.language.code}]])</label>
+	                              <div class="controls">
+	                                    <input class="input-large" th:field="*{descriptions[__${counter.index}__].metatagDescription}"/>
+	                                          <span class="help-inline" th:errorClass="error" th:errors="${category.descriptions[__${counter.index}__].metatagDescription}"/>
+	                              </div>
+	                       </div>
+	
+	                      
+	
+	                         <input type="hidden" th:field="*{descriptions[__${counter.index}__].language.code}" />
+							 <input type="hidden" th:field="*{descriptions[__${counter.index}__].id}" />
+
+						</th:block>
+
+	                 <div class="control-group">
+	
+	                        <label class="required" >Sort order</label>
+	
+	                        <div class="controls">
+	                        	<input id="order" class="highlight" th:field="*{sortOrder}"/>
+	                            <span id="help-price" class="help-inline" th:errorClass="error" th:errors="*{sortOrder}"/>
+	                        </div>
+	                  </div>
+	
+	
+	                
+	                   <div class="form-actions">
+	                            <div class="pull-right">
+	                                    <button type="submit" class="btn btn-success">Submit</button>
+	                            </div>
+	                   </div>
+           
+
+                        </form>
+                        
+              
+
+
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

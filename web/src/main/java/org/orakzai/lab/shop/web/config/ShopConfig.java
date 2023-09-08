@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.orakzai.lab.shop.web.filter.AdminFilter;
 import org.orakzai.lab.shop.web.filter.ShopFilter;
+import org.orakzai.lab.shop.web.utils.LabelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class ShopConfig implements WebMvcConfigurer {
 		
 		registry.addInterceptor(localeChangeInterceptor());
 		registry.addInterceptor(shopFilter);
-		registry.addInterceptor(adminFilter).addPathPatterns("/admin");
+		registry.addInterceptor(adminFilter).addPathPatterns("/admin/**");
 		
 	}
 	
@@ -60,6 +61,11 @@ public class ShopConfig implements WebMvcConfigurer {
 		LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
 		lci.setParamName("language");
 		return lci;
+	}
+	
+	@Bean
+	public LabelUtils messages() {
+		return new LabelUtils();
 	}
 	
 	

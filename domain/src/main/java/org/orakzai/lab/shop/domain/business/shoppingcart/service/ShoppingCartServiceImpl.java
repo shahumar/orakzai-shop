@@ -420,7 +420,7 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
     @Override
     public ShoppingCart mergeShoppingCarts( final ShoppingCart userShoppingModel, final ShoppingCart sessionCart,final MerchantStore store ) throws Exception
     {
-        if(sessionCart.getCustomerId() !=null && sessionCart.getCustomerId() ==userShoppingModel.getCustomerId() ){
+        if(sessionCart.getCustomerId() !=null && sessionCart.getCustomerId().intValue() == userShoppingModel.getCustomerId().intValue() ){
             log.info( "Session Shopping cart belongs to same logged in user" );
             if(CollectionUtils.isNotEmpty( userShoppingModel.getLineItems() ) && CollectionUtils.isNotEmpty( sessionCart.getLineItems() )){
                 return userShoppingModel;

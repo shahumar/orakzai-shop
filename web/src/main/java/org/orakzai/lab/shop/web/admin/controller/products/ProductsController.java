@@ -65,7 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-public class ProductController {
+public class ProductsController {
 	
 	@Autowired
 	private CategoryService categoryService;
@@ -468,8 +468,9 @@ public class ProductController {
 						productPrice = availability.getPrices().stream()
 							.filter(price -> price.isDefaultPrice())
 							.findFirst()
-							.get();
-						product.setProductPrice(priceUtil.getAdminFormatedAmount(store, productPrice.getProductPriceAmount()));
+							.orElse(null);
+						if (productPrice != null)
+							product.setProductPrice(priceUtil.getAdminFormatedAmount(store, productPrice.getProductPriceAmount()));
 						
 					}
 					
